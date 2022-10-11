@@ -1,0 +1,52 @@
+.top-sale {
+    padding: 80px 0 110px 0;
+    background: url('./top-sale-bg.jpg') center repeat-y;
+    .items {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 38px;
+    }
+    .item {
+        width: 220px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.65);
+        border-radius: 8px;
+        .picture {
+            min-height: 135px;
+            display: flex;
+            align-items: flex-end;
+        }
+        img {
+            display: block;
+            margin: 0 auto;
+            object-fit: contain;
+            width: 150px;
+        }
+        a {
+            text-decoration: none;
+        }
+    }
+
+    h3 {
+        font-weight: 400;
+        font-size: 24px;
+        line-height: 35px;
+        text-align: center;
+    }
+    .title, .price {
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 20px;
+        color: black;
+        margin-top: 15px;
+    }
+    .price {
+        font-weight: 700;
+        text-align: right;
+    }
+
+    .wrapper {
+        padding: 0 170px;
+    }
+}
