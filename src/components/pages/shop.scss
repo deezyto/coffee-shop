@@ -1,6 +1,6 @@
-.top-sale {
+.shop {
     padding: 80px 0 110px 0;
-    background: url('./top-sale-bg.jpg') center repeat-y;
+
     .wrapper {
         padding: 0 170px;
     }
@@ -9,5 +9,8 @@
         font-size: 24px;
         line-height: 35px;
         text-align: center;
+    }
+    &.shop-bg {
+        background: url('./top-sale-bg.jpg') center repeat-y;
     }
 }

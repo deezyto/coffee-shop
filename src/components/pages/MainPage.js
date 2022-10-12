@@ -5,12 +5,9 @@ import Footer from '../Footer/Footer';
 import About from '../About/About';
 import CoffeeList from '../CoffeeList/CoffeeList';
 import './content.scss';
-import './topSale.scss';
-/* import item from '../../img/items/item.jpg';
-import item2 from '../../img/items/item2.jpg';
-import item3 from '../../img/items/item3.jpg'; */
-import bg from './main-bg.jpg'
-
+import './shop.scss';
+import bg from './main-bg.jpg';
+import saleBg from './top-sale-bg.jpg';
 class MainPage extends Component {
   render() {
     return (
@@ -40,7 +37,7 @@ class MainPage extends Component {
             </div>
           </div>
         </section>
-        <section className="top-sale">
+        <section className="shop shop-bg">
           <div className="container">
             <div className="wrapper">
               <h3>Our best</h3>
@@ -48,45 +45,6 @@ class MainPage extends Component {
             </div>
           </div>
         </section>
-        {/* <section className="top-sale">
-          <div className="container">
-            <div className="wrapper">
-              <h3>Our best</h3>
-              <div className="items">
-                <div className="item">
-                  <a href="/">
-                    <div className="picture">
-                      <img src={item} alt="Coffee" />
-                    </div>
-                    <div className="title">AROMISTICO Coffee 1 kg</div>
-                    <div className="type"></div>
-                    <div className="price">7$</div>
-                  </a>
-                </div>
-                <div className="item">
-                  <a href="/">
-                    <div className="picture">
-                      <img src={item2} alt="Coffee" />
-                    </div>
-                    <div className="title">Solimo Coffee Beans 2 kg</div>
-                    <div className="type"></div>
-                    <div className="price">10$</div>
-                  </a>
-                </div>
-                <div className="item">
-                  <a href="/">
-                    <div className="picture">
-                      <img src={item3} alt="Coffee" />
-                    </div>
-                    <div className="title">Presto Coffee Beans 1 kg</div>
-                    <div className="type"></div>
-                    <div className="price">20$</div>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section> */}
         <Footer />
       </>
     )

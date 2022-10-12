@@ -1,12 +1,9 @@
 import React, {Component} from 'react';
+import {Link} from 'react-router-dom';
 import Logo from '../Logo/Logo';
 import './header.scss';
 
 class Header extends Component {
-  state = {
-
-  }
-
   render() {
     const {color} = this.props;
     const currentColor = color ? color : 'white';
@@ -18,16 +15,16 @@ class Header extends Component {
             <ul>
               <li>
                 <Logo color={currentColor} />
-                <a style={{color: currentColor}}
-                href="/">Coffee house</a>
+                <Link style={{color: currentColor}}
+                to="/">Coffee house</Link>
               </li>
-              <li style={{color: currentColor}}>
-                <a style={{color: currentColor}}
-                href="/">Our coffee</a>
+              <li>
+                <Link style={{color: currentColor}}
+                to="/shop">Our coffee</Link>
               </li>
-              <li style={{color: currentColor}}>
-                <a style={{color: currentColor}}
-                href="/">For your pleasure</a>
+              <li>
+                <Link style={{color: currentColor}}
+                to="/coffee-page">For your pleasure</Link>
               </li>
             </ul>
           </nav>

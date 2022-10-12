@@ -1,5 +1,5 @@
 @import './helpers/libs/bootstrap-reboot.min';
-@import url('https://fonts.googleapis.com/css2?family=Merienda:wght@400;700&display=swap');
+@import './fonts.scss';
 
 * {
     font-family: 'Merienda', cursive;
@@ -13,4 +13,8 @@
 
 p {
     margin: 0;
+}
+
+.wrapper {
+    position: relative;
 }

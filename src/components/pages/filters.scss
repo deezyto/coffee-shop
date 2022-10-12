@@ -1,0 +1,61 @@
+.filters {
+    .wrapper {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 214px 0 230px;
+    }
+    input {
+        font-style: normal;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 17px;
+        text-align: center;
+        color: rgba(0, 0, 0, 0.5);
+        background: white;
+        border: none;
+        box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.25);
+        border-radius: 5px;
+        padding: 5px 35px;
+    }
+    .filter-character, .filters-tab {
+        display: flex;
+        column-gap: 20px;
+        align-items: center;
+        height: min-content;
+    }
+
+    .filters-tab {
+        column-gap: 35px;
+    }
+
+    .filters-tab-button {
+        display: flex;
+        column-gap: 5px;
+        :nth-child(2) {
+            border-radius: 0;
+        }
+        :nth-child(3) {
+            border-radius: 0px 5px 5px 0px;
+        }
+    }
+
+    span {
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 20px;
+        color: black;
+    }
+
+    button {
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 17px;
+        text-align: center;
+        padding: 5px 20px;
+        border: none;
+        background: white;
+        box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.25);
+        border-radius: 5px 0px 0px 5px;
+
+    }
+}
