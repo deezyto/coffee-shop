@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import Header from '../Header/Header';
 import MainPage from '../pages/MainPage';
+import CoffeeListPage from '../pages/CoffeeListPage';
 
 class App extends Component {
   render() {

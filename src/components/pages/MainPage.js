@@ -2,12 +2,14 @@ import React, {Component} from 'react';
 import Header from '../Header/Header';
 import Beans from '../Beans/Beans';
 import Footer from '../Footer/Footer';
-import './about.scss';
+import About from '../About/About';
+import CoffeeList from '../CoffeeList/CoffeeList';
 import './content.scss';
 import './topSale.scss';
-import item from '../../img/items/item.jpg';
+/* import item from '../../img/items/item.jpg';
 import item2 from '../../img/items/item2.jpg';
-import item3 from '../../img/items/item3.jpg';
+import item3 from '../../img/items/item3.jpg'; */
+import bg from './main-bg.jpg'
 
 class MainPage extends Component {
   render() {
@@ -16,17 +18,16 @@ class MainPage extends Component {
         <header>
           <Header color={'white'} />
         </header>
-        <section className="about">
-          <div className="container">
-            <h1>Everything You Love About Coffee</h1>
+        <About>
+          <img src={bg} className={'about-picture'} alt="main-bg" />
+          <h1>Everything You Love About Coffee</h1>
             <Beans color={'white'} />
             <div className="subtitles">
               <p>We makes every day full of energy and taste</p>
               <p>Want to try our beans?</p>
             </div>
-            <a href="#content" className="button">more</a>
-          </div>
-        </section>
+          <a href="#content" className="button">more</a>
+        </About>
         <section className="content" id="content">
           <div className="container">
             <div className="wrapper">
@@ -40,6 +41,14 @@ class MainPage extends Component {
           </div>
         </section>
         <section className="top-sale">
+          <div className="container">
+            <div className="wrapper">
+              <h3>Our best</h3>
+              <CoffeeList />
+            </div>
+          </div>
+        </section>
+        {/* <section className="top-sale">
           <div className="container">
             <div className="wrapper">
               <h3>Our best</h3>
@@ -77,7 +86,7 @@ class MainPage extends Component {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
         <Footer />
       </>
     )

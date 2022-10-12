@@ -9,8 +9,8 @@ class Footer extends Component {
       <>
         <footer>
           <Header color={'black'} />
+          <Beans color={'black'} style={{marginTop: 28, marginBottom: 20}} />
         </footer>
-        <Beans color={'black'} style={{marginTop: 28, marginBottom: 20}} />
       </>
     )
   }
