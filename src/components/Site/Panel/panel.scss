@@ -1,0 +1,44 @@
+.user-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    order: 1;
+    transition: 0.5s all;
+    svg {
+        width: 38px;
+        cursor: pointer;
+    }
+
+    .user-picture {
+        z-index: 2;
+        svg {
+            width: 32px;
+            cursor: pointer;
+        }
+    }
+
+    .cart {
+        position: relative;
+    }
+
+    .cart-items {
+        position: absolute;
+        top: 6px;
+        left: 15px;
+        font-size: 14px;
+    }
+
+    button {
+        border: none;
+        background: transparent;
+        span {
+            color: #0d6efd;
+        }
+    }
+
+    &.active {
+        justify-content: center;
+        width: 150px;
+    }
+}

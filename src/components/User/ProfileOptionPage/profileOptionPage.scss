@@ -1,0 +1,19 @@
+.profile-page {
+    width: 700px;
+    min-height: 500px;
+    top: 100px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    z-index: 5;
+    background: white;
+    position: fixed;
+    border-radius: 5px;
+    padding: 25px;
+    
+    .close {
+        float: right;
+        cursor: pointer;
+        font-size: 20px;
+    }
+}

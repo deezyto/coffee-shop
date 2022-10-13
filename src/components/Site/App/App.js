@@ -2,6 +2,7 @@ import React from 'react';
 import MainPage from '../pages/MainPage';
 import ShopPage from '../pages/ShopPage';
 import CoffeePage from '../pages/CoffeePage';
+import Panel from '../Panel/Panel';
 import { createRef } from 'react';
 import { createBrowserRouter, useLocation, useOutlet, RouterProvider } from 'react-router-dom';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
@@ -44,6 +45,7 @@ function Router() {
           >
             {(state) => (
               <div ref={nodeRef} className="app">
+                <Panel />
                 {currentOutlet}
               </div>
             )}
