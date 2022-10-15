@@ -1,0 +1,34 @@
+.modal {
+    position: fixed;
+    top: 100px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    background: white;
+    width: 300px;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 10;
+    border: 1px solid black;
+    input {
+        width: 100%;
+        padding: 5px 10px;
+        margin-bottom: 10px;
+    }
+
+    button {
+        border: none;
+        border-radius: 5px;
+        padding: 10px;
+        display: block;
+        margin: 0 auto;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+    .close {
+        float: right;
+        font-size: 20px;
+        cursor: pointer;
+    }
+}

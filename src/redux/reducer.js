@@ -27,6 +27,11 @@ const reducer = (state = initialState, action) => {
         ...state,
         currentProfilePage: 'watch'
       }
+    case 'LOGIN':
+      return {
+        ...state,
+        currentProfilePage: 'login'
+      }
     case 'PANEL STATUS':
       return {
         ...state,
@@ -41,6 +46,26 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         currentUserProfileForm: 'name'
+      }
+    case 'FORM SURNAME':
+      return {
+        ...state,
+        currentUserProfileForm: 'surname'
+      }
+    case 'FORM PASSWORD':
+      return {
+        ...state,
+        currentUserProfileForm: 'password'
+      }
+    case 'FORM EMAIL':
+      return {
+        ...state,
+        currentUserProfileForm: 'email'
+      }
+    case 'FORM PHONE':
+      return {
+        ...state,
+        currentUserProfileForm: 'phone'
       }
     case 'FORM CANCEL':
       return {
