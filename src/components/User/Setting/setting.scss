@@ -1,0 +1,33 @@
+.user-settings {
+    span {
+        color: rgba(57, 103, 255, 1);
+        text-decoration: underline;
+        transition: 0.5s all;
+        cursor: pointer;
+        &:hover {
+            text-decoration: none;
+        }
+    }
+    .current-form {
+        display: flex;
+        column-gap: 15px;
+        input {
+            padding: 5px 10px;
+        }
+    }
+
+    .form-buttons {
+        display: flex;
+        justify-content: center;
+        column-gap: 5px;
+        .button {
+            border: none;
+            border-radius: 5px;
+            background: rgb(241, 241, 241);
+            transition: 0.5s all;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}

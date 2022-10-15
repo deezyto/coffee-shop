@@ -10,7 +10,7 @@ class ProfileOptionPage extends Component {
       <div className="profile-page">
         <div className="wrapper">
           <div className="close" onClick={() => {
-            setPageName(null);
+            setPageName('PAGE HIDE');
             setPanelStatus();
             }}>x</div>
           {this.props.children}

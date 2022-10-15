@@ -1,5 +1,9 @@
 
-const initialState = {currentProfilePage: null, panelOpen: false}
+const initialState = {
+  currentProfilePage: null, 
+  panelOpen: false, 
+  currentUserProfileForm: null
+}
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
@@ -28,10 +32,20 @@ const reducer = (state = initialState, action) => {
         ...state,
         panelOpen: !state.panelOpen
       }
-    case null:
+    case 'PAGE HIDE':
       return {
         ...state,
         currentProfilePage: null
+      }
+    case 'FORM NAME':
+      return {
+        ...state,
+        currentUserProfileForm: 'name'
+      }
+    case 'FORM CANCEL':
+      return {
+        ...state,
+        currentUserProfileForm: null
       }
     default:
       return state;
