@@ -33,12 +33,18 @@
         border: none;
         background: transparent;
         span {
-            color: #0d6efd;
+            color: white;
         }
     }
 
     &.active {
         justify-content: center;
         width: 150px;
+        span {
+            color: black;
+        }
+        svg {
+            fill: black;
+        }
     }
 }
