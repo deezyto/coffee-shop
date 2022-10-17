@@ -6,34 +6,40 @@ import ProfileOptionPage from '../ProfileOptionPage/ProfileOptionPage';
 import * as actions from '../../../redux/actions';
 import './setting.scss';
 
-const CreateField = ({currentUserProfileForm, setTypeUserForm, formName, fieldName, fieldData, validationSchema}) => {
-  const currentForm = `FORM ${formName.toUpperCase()}`;
+const CreateField = ({currentUserProfileForm, 
+                      setTypeUserForm, 
+                      fieldName, 
+                      fieldText, 
+                      fieldData, 
+                      validationSchema, 
+                      fieldType}) => {
+  const currentForm = `FORM ${fieldName.toUpperCase()}`;
   return (
       <>
       <Formik
           initialValues = {{
-            [formName]: ''
+            [fieldName]: ''
           }}
 
           validationSchema={validationSchema}
           
           onSubmit={values => {
-            console.log('submit ' + formName);
+            console.log('submit ' + fieldName);
             setTypeUserForm('FORM CANCEL')
           }}
           >
           
         <div className="field">
-          {fieldName}: <span onClick={() => setTypeUserForm(currentForm)}>{fieldData}</span>
-          {currentUserProfileForm === formName ?
+          {fieldText}: <span onClick={() => setTypeUserForm(currentForm)}>{fieldData}</span>
+          {currentUserProfileForm === fieldName ?
 
           <Form>
             <div className="current-form">
             <Field
-              id={formName}
-              name={formName}
-              type="text"
-              placeholder={'Enter ' + formName}
+              id={fieldName}
+              name={fieldName}
+              type={fieldType}
+              placeholder={'Enter ' + fieldName}
               >
             </Field>
             <div className="form-buttons">
@@ -56,7 +62,7 @@ const CreateField = ({currentUserProfileForm, setTypeUserForm, formName, fieldNa
             </div>
             </div>
             
-            <FormikErrorMessage name={formName} style={{padding: 5, display: 'block'}} component="p" />
+            <FormikErrorMessage name={fieldName} style={{padding: 5, display: 'block'}} component="p" />
           </Form>
           : null
           }
@@ -80,9 +86,10 @@ class UserSetting extends Component {
                 <CreateField 
                   currentUserProfileForm={currentUserProfileForm} 
                   setTypeUserForm={setTypeUserForm}
-                  formName={'name'}
-                  fieldName={'Name'}
+                  fieldName={'name'}
+                  fieldText={'Name'}
                   fieldData={'Mike'}
+                  fieldType={'text'}
                   validationSchema={
                     Yup.object({
                       name: Yup.string()
@@ -94,9 +101,10 @@ class UserSetting extends Component {
                 <CreateField 
                   currentUserProfileForm={currentUserProfileForm} 
                   setTypeUserForm={setTypeUserForm}
-                  formName={'surname'}
-                  fieldName={'Surname'}
+                  fieldName={'surname'}
+                  fieldText={'Surname'}
                   fieldData={'Smith'}
+                  fieldType={'name'}
                   validationSchema={
                     Yup.object({
                       surname: Yup.string()
@@ -108,9 +116,10 @@ class UserSetting extends Component {
                 <CreateField 
                   currentUserProfileForm={currentUserProfileForm} 
                   setTypeUserForm={setTypeUserForm}
-                  formName={'password'}
-                  fieldName={'Password'}
+                  fieldName={'password'}
+                  fieldText={'Password'}
                   fieldData={'change'}
+                  fieldType={'password'}
                   validationSchema={
                     Yup.object({
                       password: Yup.string()
@@ -122,9 +131,10 @@ class UserSetting extends Component {
                 <CreateField 
                   currentUserProfileForm={currentUserProfileForm} 
                   setTypeUserForm={setTypeUserForm}
-                  formName={'email'}
-                  fieldName={'Email'}
+                  fieldName={'email'}
+                  fieldText={'Email'}
                   fieldData={'mike@example.com'}
+                  fieldType={'text'}
                   validationSchema={
                     Yup.object({
                       email: Yup.string().email()
@@ -135,15 +145,17 @@ class UserSetting extends Component {
                 <CreateField 
                   currentUserProfileForm={currentUserProfileForm} 
                   setTypeUserForm={setTypeUserForm}
-                  formName={'address'}
-                  fieldName={'Address'}
+                  fieldName={'address'}
+                  fieldText={'Address'}
                   fieldData={'current'}
+                  fieldType={'text'}
                 />
                 <CreateField 
                   currentUserProfileForm={currentUserProfileForm} 
                   setTypeUserForm={setTypeUserForm}
-                  formName={'phone'}
-                  fieldName={'Phone'}
+                  fieldName={'phone'}
+                  fieldText={'Phone'}
+                  fieldType={'number'}
                   fieldData={'+382020430203'}
                   validationSchema={
                     Yup.object({
