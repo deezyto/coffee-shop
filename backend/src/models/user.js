@@ -91,7 +91,8 @@ const userModel = {
   }
 }
 
-const userTokens = {tokens: [
+const userTokens = {
+  tokens: [
   {
     token: {
       type: String,

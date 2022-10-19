@@ -2,7 +2,8 @@
 const initialState = {
   currentProfilePage: null, 
   panelOpen: false, 
-  currentUserProfileForm: null
+  currentUserProfileForm: null,
+  loginStatus: 'idle'
 }
 
 const reducer = (state = initialState, action) => {
@@ -71,6 +72,21 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         currentUserProfileForm: null
+      }
+    case 'LOGIN_FETCHING':
+      return {
+        ...state,
+        loginStatus: 'loading'
+      }
+    case 'LOGIN_FETCHED':
+      return {
+        ...state,
+        loginStatus: 'idle'
+      }
+    case 'LOGIN_FETCHING_ERR':
+      return {
+        ...state,
+        loginStatus: 'err'
       }
     default:
       return state;

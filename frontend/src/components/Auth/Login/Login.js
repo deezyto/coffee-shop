@@ -6,13 +6,31 @@ import * as actions from '../../../redux/actions';
 import Service from '../../../service/service';
 import './login.scss';
 class Login extends Component {
+  timeoutClearMessage = null;
+  timeoutHideModal = null;
   onHandleSubmit = (data) => {
+    this.props.loginFetching();
     new Service().userLogin(data)
     .then(res => {
       console.log(res)
       localStorage.setItem('token', res.token);
+      this.timeoutHideModal = setTimeout(() => {
+        this.props.loginFetched();
+        this.props.setPageName('PAGE HIDE');
+      }, 3000);
     })
-    .catch((e) => console.log(e))
+    .catch((e) => {
+      console.log(e)
+      this.props.loginFetchingErr();
+      this.timeout = setTimeout(() => {
+        this.props.loginFetched();
+      }, 3000);
+    })
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.timeoutClearMessage);
+    clearTimeout(this.timeoutHideModal);
   }
 
   render() {
@@ -37,11 +55,11 @@ class Login extends Component {
                       .min(2, 'Min characters for name must be 2')
                       .required('Its field is required'),
             })}
-            onSubmit={values => {
 
+            onSubmit={(values, {resetForm}) => {
               console.log('submit login');
-              setPageName('LOGIN');
               this.onHandleSubmit(values);
+              resetForm();
             }}
             
             >
@@ -70,6 +88,10 @@ class Login extends Component {
                   Submit
                 </button>
               </div>
+              <div className="message">
+                {this.props.loginStatus === 'loading' ? 'loading' : null}
+                {this.props.loginStatus === 'err' ? 'Your password or email not correctly' : null}
+              </div>
             </Form>
           </Formik>
         </div>
@@ -80,7 +102,8 @@ class Login extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    currentProfilePage: state.currentProfilePage
+    currentProfilePage: state.currentProfilePage,
+    loginStatus: state.loginStatus
   }
 }
 
