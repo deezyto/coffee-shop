@@ -3,10 +3,20 @@ import {Formik, Form, Field, ErrorMessage as FormikErrorMessage} from 'formik';
 import * as Yup from 'yup';
 import {connect} from 'react-redux';
 import * as actions from '../../../redux/actions';
-
+import Service from '../../../service/service';
 import './login.scss';
 class Login extends Component {
+  onHandleSubmit = (data) => {
+    new Service().userLogin(data)
+    .then(res => {
+      console.log(res)
+      localStorage.setItem('token', res.token);
+    })
+    .catch((e) => console.log(e))
+  }
+
   render() {
+    console.log(this.state);
     const {setPageName} = this.props;
     return (
       <div className="modal">
@@ -28,9 +38,10 @@ class Login extends Component {
                       .required('Its field is required'),
             })}
             onSubmit={values => {
-              values.target.reset();
+
               console.log('submit login');
               setPageName('LOGIN');
+              this.onHandleSubmit(values);
             }}
             
             >
