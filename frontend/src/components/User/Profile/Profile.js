@@ -6,13 +6,34 @@ import UserOrders from '../Orders/Orders';
 import UserHistory from '../History/History';
 import UserWatch from '../Watch/Watch';
 import Login from '../../Auth/Login/Login';
+import Service from "../../../service/service";
+
 import './profile.scss';
 
 class UserProfile extends Component {
+  token = localStorage.getItem('token');
+
+  onLogout = () => {
+    console.log(this.props.authToken, 'onLogout')
+    new Service().userLogout({'Authorization': `Bearer ${this.token}`})
+      .then(res => {
+        console.log(res, 'Logout');
+        localStorage.removeItem('token');
+        this.props.isLogin(false);
+        this.props.setAuthToken(false);
+        document.location.reload();
+      })
+      .catch(e => {
+        console.log(e);
+      })
+  }
+
   render() {
+    const {currentProfilePage, login, authToken, setPageName, panelOpen} = this.props;
     console.log(this.props)
-    const {currentProfilePage, setPageName, panelOpen, loginModal, viewLoginModal} = this.props;
     if (!panelOpen) setPageName('PAGE HIDE');
+    const token = localStorage.getItem('token');
+    console.log(token === true, 'token')
     return (
       <>
         {currentProfilePage === 'setting' ? <UserSetting /> : null}
@@ -24,12 +45,19 @@ class UserProfile extends Component {
         <div className={panelOpen ? 'user-profile active': 'user-profile'}>
           <div className="hello"></div>
           <div className="options">
-            <button onClick={() => setPageName('SETTING')}>Setting</button>
-            <button onClick={() => setPageName('HISTORY')}>Order history</button>
-            <button onClick={() => setPageName('ORDERS')}>Orders</button>
+          {login || authToken || token
+            ? 
+              <>
+                <button onClick={() => setPageName('SETTING')}>Setting</button>
+                <button onClick={() => setPageName('HISTORY')}>Order history</button>
+                <button onClick={() => setPageName('ORDERS')}>Orders</button>
+                <button onClick={this.onLogout}>LogOut</button>
+              </> 
+            : 
+              <button onClick={() => setPageName('LOGIN')}>Login</button>
+          }
             <button onClick={() => setPageName('WATCH')}>Watch List</button>
-            <button onClick={() => setPageName('LOGIN')}>Login/SignUp</button>
-            <button>LogOut</button>
+            
           </div>
         </div>
       </>
@@ -40,7 +68,9 @@ class UserProfile extends Component {
 const mapStateToProps = (state) => {
   return {
     currentProfilePage: state.currentProfilePage,
-    panelOpen: state.panelOpen
+    panelOpen: state.panelOpen,
+    login: state.login,
+    authToken: state.authToken
   }
 }
 

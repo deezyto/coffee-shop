@@ -3,7 +3,9 @@ const initialState = {
   currentProfilePage: null, 
   panelOpen: false, 
   currentUserProfileForm: null,
-  loginStatus: 'idle'
+  loginStatus: 'idle',
+  login: false,
+  authToken: null
 }
 
 const reducer = (state = initialState, action) => {
@@ -87,6 +89,16 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         loginStatus: 'err'
+      }
+    case 'ISLOGIN':
+      return {
+        ...state,
+        login: action.payload
+      }
+    case 'AUTH_TOKEN':
+      return {
+        ...state,
+        login: action.payload
       }
     default:
       return state;

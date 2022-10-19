@@ -18,6 +18,11 @@ class Service {
     return result;
   }
 
+  userLogout = async (headers = {}) => {
+    const result = await this.getResource(`${this._apiBase}/users/logout`, 'POST', null, {...this._headers, ...headers})
+    return result;
+  }
+
 }
 
 export default Service;

@@ -17,6 +17,9 @@ class Login extends Component {
       this.timeoutHideModal = setTimeout(() => {
         this.props.loginFetched();
         this.props.setPageName('PAGE HIDE');
+        this.props.isLogin(true);
+        this.props.setAuthToken(true);
+        document.location.reload();
       }, 3000);
     })
     .catch((e) => {
