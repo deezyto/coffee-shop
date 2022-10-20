@@ -5,11 +5,10 @@ const router = new express.Router();
 
 router.post('/users', async (req, res) => {
   try {
-    const user = new User(req.body);
+    const user = req.body.role === 'customer' ? new User(req.body) : new User({...req.body, role: 'customer'});
     await user.save();
     const token = await user.generateAuthToken();
     res.status(201).send({user, token});
-    
   } catch (e) {
     res.status(400).send({err: e});
   }

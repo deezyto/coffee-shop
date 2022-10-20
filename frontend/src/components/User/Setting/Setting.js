@@ -5,7 +5,6 @@ import * as Yup from 'yup';
 import ProfileOptionPage from '../ProfileOptionPage/ProfileOptionPage';
 import * as actions from '../../../redux/actions';
 import Service from '../../../service/service';
-import { getItem, setItem } from '../../../store/localStorage';
 import './setting.scss';
 
 const CreateField = ({currentUserProfileForm, 
@@ -16,8 +15,6 @@ const CreateField = ({currentUserProfileForm,
                       validationSchema, 
                       onHandleSubmit,
                       fieldType}) => {
-  //const data = localStorage.getItem('userData') !== 'undefined' ? JSON.parse(localStorage.getItem('userData'))?.[fieldName] : null;
-  //const data = getItem('userData', fieldName) ? getItem('userData', fieldName) : null;
   const data = fieldData[fieldName] ? fieldData[fieldName] : null;
   const fieldDataLocalStorage = data && fieldName !== 'password' ? data : 'change';
   return (

@@ -50,7 +50,8 @@ const userModel = {
     type: String,
     trim: true,
     required: true,
-    minLength: [5, 'Min length for user role must be a 5 characters'],
+    default: "customer"
+    /* minLength: [4, 'Min length for user role must be a 4 characters'],
     maxLength: [20, 'Max length for user role must be a 20 characters'],
     validate(value) {
       const arr = ['customer', 'manager', 'support'];
@@ -58,7 +59,7 @@ const userModel = {
       if (!result) {
         throw new Error('This role in not allowed');
       }
-    }
+    } */
   },
   gender: {
     type: String,

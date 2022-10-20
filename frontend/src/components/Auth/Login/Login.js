@@ -4,7 +4,6 @@ import * as Yup from 'yup';
 import {connect} from 'react-redux';
 import * as actions from '../../../redux/actions';
 import Service from '../../../service/service';
-import {setItem} from '../../../store/localStorage';
 
 import './login.scss';
 class Login extends Component {

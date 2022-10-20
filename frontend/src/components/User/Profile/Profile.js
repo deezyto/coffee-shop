@@ -14,8 +14,7 @@ class UserProfile extends Component {
 
   onLogout = () => {
     new Service().userLogout({'Authorization': `Bearer ${this.props.authToken}`})
-      .then(res => {
-        console.log(res, 'Logout');
+      .then(() => {
         localStorage.removeItem('token');
         localStorage.removeItem('userProfileFields');
         this.props.isLogin(false);
