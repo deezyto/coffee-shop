@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import {connect} from 'react-redux';
 import * as actions from '../../../redux/actions';
 import Service from '../../../service/service';
-import {getItem, setItem} from '../../../store/localStorage';
+import {setItem} from '../../../store/localStorage';
 
 import './login.scss';
 class Login extends Component {
@@ -15,6 +15,7 @@ class Login extends Component {
     new Service().userLogin(data)
     .then(res => {
       setItem('userData', res.user);
+      this.props.setUserProfileFields(res.user);
       localStorage.setItem('token', res.token);
       localStorage.setItem('login', true);
 
@@ -23,7 +24,6 @@ class Login extends Component {
         this.props.setPageName('PAGE HIDE');
         this.props.isLogin(true);
         this.props.setAuthToken(res.token);
-        //document.location.reload();
       }, 1000);
     })
     .catch((e) => {
@@ -41,7 +41,6 @@ class Login extends Component {
   }
 
   render() {
-    console.log(this.state);
     const {setPageName} = this.props;
     return (
       <div className="modal">
@@ -110,7 +109,8 @@ class Login extends Component {
 const mapStateToProps = (state) => {
   return {
     currentProfilePage: state.currentProfilePage,
-    loginStatus: state.loginStatus
+    loginStatus: state.loginStatus,
+    userProfileFields: state.userProfileFields
   }
 }
 

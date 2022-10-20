@@ -11,8 +11,6 @@ export const getItem = (name, key, type = typeStorage) => {
     }
   } else if (type === 'cookies') {
     try {
-      console.log('cookies')
-      console.log(JSON.parse(cookiesToObj()['token']))
       return key ? JSON.parse(cookiesToObj()[name])[key] : JSON.parse(cookiesToObj()[name]);
     } catch {
 

@@ -12,11 +12,13 @@ const CreateField = ({currentUserProfileForm,
                       setCurrentUserProfileForm, 
                       fieldName, 
                       fieldText,
+                      fieldData,
                       validationSchema, 
                       onHandleSubmit,
                       fieldType}) => {
   //const data = localStorage.getItem('userData') !== 'undefined' ? JSON.parse(localStorage.getItem('userData'))?.[fieldName] : null;
-  const data = getItem('userData', fieldName) ? getItem('userData', fieldName) : null;
+  //const data = getItem('userData', fieldName) ? getItem('userData', fieldName) : null;
+  const data = fieldData[fieldName] ? fieldData[fieldName] : null;
   const fieldDataLocalStorage = data && fieldName !== 'password' ? data : 'change';
   return (
       <>
@@ -78,19 +80,17 @@ const CreateField = ({currentUserProfileForm,
   )
 }
 class UserSetting extends Component {
-  token = getItem('token');
   
   onChangeField = (obj) => {
-    new Service().userChangeFieldProfile(obj, {"Authorization": `Bearer ${this.token}`})
+    new Service().userChangeFieldProfile(obj, {"Authorization": `Bearer ${this.props.authToken}`})
       .then(res => {
-        console.log(res);
         setItem('userData', res);
+        this.props.setUserProfileFields(res);
       })
       .catch(e => console.log(e));
   }
   render() {
-    const {currentUserProfileForm, setCurrentUserProfileForm} = this.props;
-    console.log(currentUserProfileForm, 'currentUserProfileForm')
+    const {currentUserProfileForm, setCurrentUserProfileForm, userProfileFields} = this.props;
     return (
       <ProfileOptionPage>
         <h3>Setting</h3>
@@ -102,6 +102,7 @@ class UserSetting extends Component {
                   fieldName={'name'}
                   fieldText={'Name'}
                   fieldType={'text'}
+                  fieldData={userProfileFields}
                   onHandleSubmit={this.onChangeField}
                   validationSchema={
                     Yup.object({
@@ -117,6 +118,7 @@ class UserSetting extends Component {
                   fieldName={'surname'}
                   fieldText={'Surname'}
                   fieldType={'name'}
+                  fieldData={userProfileFields}
                   onHandleSubmit={this.onChangeField}
                   validationSchema={
                     Yup.object({
@@ -132,6 +134,7 @@ class UserSetting extends Component {
                   fieldName={'password'}
                   fieldText={'Password'}
                   fieldType={'password'}
+                  fieldData={userProfileFields}
                   onHandleSubmit={this.onChangeField}
                   validationSchema={
                     Yup.object({
@@ -147,6 +150,7 @@ class UserSetting extends Component {
                   fieldName={'email'}
                   fieldText={'Email'}
                   fieldType={'text'}
+                  fieldData={userProfileFields}
                   onHandleSubmit={this.onChangeField}
                   validationSchema={
                     Yup.object({
@@ -161,6 +165,7 @@ class UserSetting extends Component {
                   fieldName={'address'}
                   fieldText={'Address'}
                   fieldType={'text'}
+                  fieldData={userProfileFields}
                   onHandleSubmit={this.onChangeField}
                   validationSchema={
                     Yup.object({
@@ -175,6 +180,7 @@ class UserSetting extends Component {
                   fieldName={'phone'}
                   fieldText={'Phone'}
                   fieldType={'number'}
+                  fieldData={userProfileFields}
                   onHandleSubmit={this.onChangeField}
                   validationSchema={
                     Yup.object({
@@ -192,7 +198,9 @@ class UserSetting extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    currentUserProfileForm: state.currentUserProfileForm
+    currentUserProfileForm: state.currentUserProfileForm,
+    authToken: state.authToken,
+    userProfileFields: state.userProfileFields
   }
 }
 

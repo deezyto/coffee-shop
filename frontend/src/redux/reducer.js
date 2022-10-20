@@ -4,6 +4,7 @@ const initialState = {
   currentProfilePage: null, 
   panelOpen: false, 
   currentUserProfileForm: null,
+  userProfileFields: getItem('userData') ? getItem('userData') : null,
   loginStatus: 'idle',
   login: localStorage.getItem('login') ? true : false,
   authToken: localStorage.getItem('token') ? localStorage.getItem('token') : false
@@ -80,6 +81,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         authToken: action.payload
+      }
+    case 'USER_PROFILE_FIELDS':
+      return {
+        ...state,
+        userProfileFields: action.payload
       }
     default:
       return state;

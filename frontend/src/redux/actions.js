@@ -6,3 +6,4 @@ export const loginFetched = () => ({type: 'LOGIN_FETCHED'});
 export const loginFetchingErr = () => ({type: 'LOGIN_FETCHING_ERR'});
 export const isLogin = (status) => ({type: 'ISLOGIN', payload: status});
 export const setAuthToken = (status) => ({type: 'AUTH_TOKEN', payload: status});
+export const setUserProfileFields = (obj) => ({type: 'USER_PROFILE_FIELDS', payload: obj});
