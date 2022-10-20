@@ -21,7 +21,7 @@
         flex-direction: column;
     }
 
-    .logout {
+    .setting {
         border: none;
         border-radius: 5px;
         transition: 0.5s all;
@@ -31,4 +31,19 @@
             text-decoration: underline;
         }
     }
+
+    &.profile {
+        .profile-page {
+            border: 1px solid black;
+        }
+    }
 }
+
+/* .user-panel {
+    svg {
+        fill: black;
+    }
+    span {
+        color: black;
+    }
+} */

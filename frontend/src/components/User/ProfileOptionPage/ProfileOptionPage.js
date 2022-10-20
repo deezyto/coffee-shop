@@ -12,6 +12,7 @@ class ProfileOptionPage extends Component {
           <div className="close" onClick={() => {
             setPageName('PAGE HIDE');
             setPanelStatus();
+            console.log('close profile')
             }}>x</div>
           {this.props.children}
         </div>
