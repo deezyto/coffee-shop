@@ -14,7 +14,7 @@ class Login extends Component {
     this.props.loginFetching();
     new Service().userLogin(data)
     .then(res => {
-      setItem('userData', res.user);
+      localStorage.setItem('userProfileFields', JSON.stringify(res.user));
       this.props.setUserProfileFields(res.user);
       localStorage.setItem('token', res.token);
       localStorage.setItem('login', true);

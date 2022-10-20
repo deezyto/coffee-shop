@@ -7,7 +7,6 @@ import UserHistory from '../History/History';
 import UserWatch from '../Watch/Watch';
 import Login from '../../Auth/Login/Login';
 import Service from "../../../service/service";
-import {getItem, removeItem} from '../../../store/localStorage';
 
 import './profile.scss';
 
@@ -18,9 +17,10 @@ class UserProfile extends Component {
       .then(res => {
         console.log(res, 'Logout');
         localStorage.removeItem('token');
-        removeItem('userData');
+        localStorage.removeItem('userProfileFields');
         this.props.isLogin(false);
         this.props.setAuthToken(false);
+        this.props.setPageName('PAGE HIDE');
       })
       .catch(e => {
         console.log(e);

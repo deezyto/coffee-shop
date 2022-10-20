@@ -1,10 +1,8 @@
-import { getItem } from "../store/localStorage"
-
 const initialState = {
   currentProfilePage: null, 
   panelOpen: false, 
   currentUserProfileForm: null,
-  userProfileFields: getItem('userData') ? getItem('userData') : null,
+  userProfileFields: localStorage.getItem('userProfileFields') ? JSON.parse(localStorage.getItem('userProfileFields')) : null,
   loginStatus: 'idle',
   login: localStorage.getItem('login') ? true : false,
   authToken: localStorage.getItem('token') ? localStorage.getItem('token') : false

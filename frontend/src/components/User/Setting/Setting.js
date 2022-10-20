@@ -84,7 +84,7 @@ class UserSetting extends Component {
   onChangeField = (obj) => {
     new Service().userChangeFieldProfile(obj, {"Authorization": `Bearer ${this.props.authToken}`})
       .then(res => {
-        setItem('userData', res);
+        localStorage.setItem('userProfileFields', JSON.stringify(res));
         this.props.setUserProfileFields(res);
       })
       .catch(e => console.log(e));
