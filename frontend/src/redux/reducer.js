@@ -5,7 +5,12 @@ const initialState = {
   userProfileFields: localStorage.getItem('userProfileFields') ? JSON.parse(localStorage.getItem('userProfileFields')) : null,
   loginStatus: 'idle',
   login: localStorage.getItem('login') ? true : false,
-  authToken: localStorage.getItem('token') ? localStorage.getItem('token') : false
+  authToken: localStorage.getItem('token') ? localStorage.getItem('token') : false,
+  users: [],
+  usersLoadingStatus: 'idle',
+  admin: false,
+  items: [],
+  itemsLoadingStatus: 'idle'
 }
 
 const reducer = (state = initialState, action) => {
@@ -84,6 +89,38 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         userProfileFields: action.payload
+      }
+    case 'USERS_FETCHING':
+      return {
+        ...state,
+        usersLoadingStatus: 'loading'
+      }
+    case 'USERS_FETCHED':
+      return {
+        ...state,
+        usersLoadingStatus: 'idle',
+        users: action.payload
+      }
+    case 'USERS_FETCHING_ERR':
+      return {
+        ...state,
+        usersLoadingStatus: 'err'
+      }
+    case 'ITEMS_FETCHING':
+      return {
+        ...state,
+        itemsLoadingStatus: 'loading'
+      }
+    case 'ITEMS_FETCHED':
+      return {
+        ...state,
+        itemsLoadingStatus: 'idle',
+        items: action.payload
+      }
+    case 'ITEMS_FETCHING_ERR':
+      return {
+        ...state,
+        itemsLoadingStatus: 'err'
       }
     default:
       return state;

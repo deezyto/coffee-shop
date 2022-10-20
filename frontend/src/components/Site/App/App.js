@@ -6,12 +6,14 @@ import Panel from '../Panel/Panel';
 import { createRef } from 'react';
 import { createBrowserRouter, useLocation, useOutlet, RouterProvider } from 'react-router-dom';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
+import AdminPanel from '../../Admin/Panel/Panel';
 import './transition.css';
 
 const routes = [
   { path: '/', name: 'MainPage', element: <MainPage />, nodeRef: createRef() },
   { path: '/shop', name: 'ShopPage', element: <ShopPage />, nodeRef: createRef() },
   { path: '/coffee-page', name: 'CoffeePage', element: <CoffeePage />, nodeRef: createRef() },
+  { path: '/admin-panel', name: 'AdminPanel', element: <AdminPanel />, nodeRef: createRef() },
   { path: '*', name: 'NotFound', element: <h1>Page not found</h1>, nodeRef: createRef() }
 ]
 
