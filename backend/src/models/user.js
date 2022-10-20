@@ -16,7 +16,6 @@ const userModel = {
   },
   surname: {
     type: String,
-    required: true,
     trim: true
   },
   dateBirth: {

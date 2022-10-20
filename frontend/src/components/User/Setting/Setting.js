@@ -14,6 +14,8 @@ const CreateField = ({currentUserProfileForm,
                       validationSchema, 
                       fieldType}) => {
   const currentForm = `FORM ${fieldName.toUpperCase()}`;
+  const data = JSON.parse(localStorage.getItem('userData'))?.[fieldName];
+  const fieldDataLocalStorage = data && fieldName !== 'password' ? data : 'change';
   return (
       <>
       <Formik
@@ -30,7 +32,7 @@ const CreateField = ({currentUserProfileForm,
           >
           
         <div className="field">
-          {fieldText}: <span onClick={() => setTypeUserForm(currentForm)}>{fieldData}</span>
+          {fieldText}: <span onClick={() => setTypeUserForm(currentForm)}>{fieldDataLocalStorage}</span>
           {currentUserProfileForm === fieldName ?
 
           <Form>
@@ -80,9 +82,6 @@ class UserSetting extends Component {
         <h3>Setting</h3>
           <div className="user-settings">
               <div className="fields">
-                <div className="field">
-                  Login: login
-                </div>
                 <CreateField 
                   currentUserProfileForm={currentUserProfileForm} 
                   setTypeUserForm={setTypeUserForm}

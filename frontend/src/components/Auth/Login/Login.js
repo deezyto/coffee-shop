@@ -12,8 +12,9 @@ class Login extends Component {
     this.props.loginFetching();
     new Service().userLogin(data)
     .then(res => {
-      console.log(res)
       localStorage.setItem('token', res.token);
+      localStorage.setItem('userData', JSON.stringify(res.user));
+
       this.timeoutHideModal = setTimeout(() => {
         this.props.loginFetched();
         this.props.setPageName('PAGE HIDE');
