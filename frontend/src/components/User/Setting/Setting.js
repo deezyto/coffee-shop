@@ -4,17 +4,19 @@ import {Formik, Form, Field, ErrorMessage as FormikErrorMessage} from 'formik';
 import * as Yup from 'yup';
 import ProfileOptionPage from '../ProfileOptionPage/ProfileOptionPage';
 import * as actions from '../../../redux/actions';
+import Service from '../../../service/service';
+import { getItem, setItem } from '../../../store/localStorage';
 import './setting.scss';
 
 const CreateField = ({currentUserProfileForm, 
-                      setTypeUserForm, 
+                      setCurrentUserProfileForm, 
                       fieldName, 
-                      fieldText, 
-                      fieldData, 
+                      fieldText,
                       validationSchema, 
+                      onHandleSubmit,
                       fieldType}) => {
-  const currentForm = `FORM ${fieldName.toUpperCase()}`;
-  const data = JSON.parse(localStorage.getItem('userData'))?.[fieldName];
+  //const data = localStorage.getItem('userData') !== 'undefined' ? JSON.parse(localStorage.getItem('userData'))?.[fieldName] : null;
+  const data = getItem('userData', fieldName) ? getItem('userData', fieldName) : null;
   const fieldDataLocalStorage = data && fieldName !== 'password' ? data : 'change';
   return (
       <>
@@ -27,12 +29,13 @@ const CreateField = ({currentUserProfileForm,
           
           onSubmit={values => {
             console.log('submit ' + fieldName);
-            setTypeUserForm('FORM CANCEL')
+            setCurrentUserProfileForm('FORM CANCEL');
+            onHandleSubmit(values)
           }}
           >
           
         <div className="field">
-          {fieldText}: <span onClick={() => setTypeUserForm(currentForm)}>{fieldDataLocalStorage}</span>
+          {fieldText}: <span onClick={() => setCurrentUserProfileForm(undefined, fieldName)}>{fieldDataLocalStorage}</span>
           {currentUserProfileForm === fieldName ?
 
           <Form>
@@ -55,7 +58,7 @@ const CreateField = ({currentUserProfileForm,
                 type="reset"
                 className="button cancel"
                 onClick={(e) => {
-                  setTypeUserForm('FORM CANCEL')
+                  setCurrentUserProfileForm('FORM CANCEL')
                   e.currentTarget.form.reset()
                 }}
                 >
@@ -75,8 +78,19 @@ const CreateField = ({currentUserProfileForm,
   )
 }
 class UserSetting extends Component {
+  token = getItem('token');
+  
+  onChangeField = (obj) => {
+    new Service().userChangeFieldProfile(obj, {"Authorization": `Bearer ${this.token}`})
+      .then(res => {
+        console.log(res);
+        setItem('userData', res);
+      })
+      .catch(e => console.log(e));
+  }
   render() {
-    const {currentUserProfileForm, setTypeUserForm} = this.props;
+    const {currentUserProfileForm, setCurrentUserProfileForm} = this.props;
+    console.log(currentUserProfileForm, 'currentUserProfileForm')
     return (
       <ProfileOptionPage>
         <h3>Setting</h3>
@@ -84,82 +98,88 @@ class UserSetting extends Component {
               <div className="fields">
                 <CreateField 
                   currentUserProfileForm={currentUserProfileForm} 
-                  setTypeUserForm={setTypeUserForm}
+                  setCurrentUserProfileForm={setCurrentUserProfileForm}
                   fieldName={'name'}
                   fieldText={'Name'}
-                  fieldData={'Mike'}
                   fieldType={'text'}
+                  onHandleSubmit={this.onChangeField}
                   validationSchema={
                     Yup.object({
                       name: Yup.string()
                               .min(2, 'Min characters for name must be 2')
-                              .required('Its field is required'),
+                              .required('Its field is required')
                     })
                   }
                 />
                 <CreateField 
                   currentUserProfileForm={currentUserProfileForm} 
-                  setTypeUserForm={setTypeUserForm}
+                  setCurrentUserProfileForm={setCurrentUserProfileForm}
                   fieldName={'surname'}
                   fieldText={'Surname'}
-                  fieldData={'Smith'}
                   fieldType={'name'}
+                  onHandleSubmit={this.onChangeField}
                   validationSchema={
                     Yup.object({
                       surname: Yup.string()
                               .min(2, 'Min characters for surname must be 2')
-                              .required('Its field is required'),
+                              .required('Its field is required')
                     })
                   }
                 />
                 <CreateField 
                   currentUserProfileForm={currentUserProfileForm} 
-                  setTypeUserForm={setTypeUserForm}
+                  setCurrentUserProfileForm={setCurrentUserProfileForm}
                   fieldName={'password'}
                   fieldText={'Password'}
-                  fieldData={'change'}
                   fieldType={'password'}
+                  onHandleSubmit={this.onChangeField}
                   validationSchema={
                     Yup.object({
                       password: Yup.string()
                               .min(8, 'Min characters for passwotd must be 8')
-                              .required('Its field is required'),
+                              .required('Its field is required')
                     })
                   }
                 />
                 <CreateField 
                   currentUserProfileForm={currentUserProfileForm} 
-                  setTypeUserForm={setTypeUserForm}
+                  setCurrentUserProfileForm={setCurrentUserProfileForm}
                   fieldName={'email'}
                   fieldText={'Email'}
-                  fieldData={'mike@example.com'}
                   fieldType={'text'}
+                  onHandleSubmit={this.onChangeField}
                   validationSchema={
                     Yup.object({
                       email: Yup.string().email()
-                              .required('Its field is required'),
+                              .required('Its field is required')
                     })
                   }
                 />
                 <CreateField 
                   currentUserProfileForm={currentUserProfileForm} 
-                  setTypeUserForm={setTypeUserForm}
+                  setCurrentUserProfileForm={setCurrentUserProfileForm}
                   fieldName={'address'}
                   fieldText={'Address'}
-                  fieldData={'current'}
                   fieldType={'text'}
+                  onHandleSubmit={this.onChangeField}
+                  validationSchema={
+                    Yup.object({
+                      address: Yup.string()
+                              .max(100, 'Max characters for Your address must be a 100')
+                    })
+                  }
                 />
                 <CreateField 
                   currentUserProfileForm={currentUserProfileForm} 
-                  setTypeUserForm={setTypeUserForm}
+                  setCurrentUserProfileForm={setCurrentUserProfileForm}
                   fieldName={'phone'}
                   fieldText={'Phone'}
                   fieldType={'number'}
-                  fieldData={'+382020430203'}
+                  onHandleSubmit={this.onChangeField}
                   validationSchema={
                     Yup.object({
                       phone: Yup.number().positive()
-                              .required('Its field is required'),
+                              .required('Its field is required')
                     })
                   }
                 />

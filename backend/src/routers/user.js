@@ -58,6 +58,7 @@ router.put('/users/me', auth, async (req, res) => {
     const allowedFields = ['name', 'lastname', 'surname', 'password', 'address', 
                           'dateBirth', 'email', 'gender', 'phone', 'postalCode'];
     const isValidUpdates = updates.every(item => allowedFields.includes(item));
+    console.log(isValidUpdates)
     if (!isValidUpdates) {
       return res.status(400).send({err: 'This updates not allowed'});
     }

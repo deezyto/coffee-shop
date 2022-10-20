@@ -23,6 +23,10 @@ class Service {
     return result;
   }
 
+  userChangeFieldProfile = async (body, headers = {}) => {
+    return await this.getResource(`${this._apiBase}/users/me`, 'PUT', JSON.stringify(body), {...this._headers, ...headers})
+  }
+
 }
 
 export default Service;

@@ -7,21 +7,20 @@ import UserHistory from '../History/History';
 import UserWatch from '../Watch/Watch';
 import Login from '../../Auth/Login/Login';
 import Service from "../../../service/service";
+import {getItem, removeItem} from '../../../store/localStorage';
 
 import './profile.scss';
 
 class UserProfile extends Component {
-  token = localStorage.getItem('token');
 
   onLogout = () => {
-    console.log(this.props.authToken, 'onLogout')
-    new Service().userLogout({'Authorization': `Bearer ${this.token}`})
+    new Service().userLogout({'Authorization': `Bearer ${this.props.authToken}`})
       .then(res => {
         console.log(res, 'Logout');
         localStorage.removeItem('token');
+        removeItem('userData');
         this.props.isLogin(false);
         this.props.setAuthToken(false);
-        document.location.reload();
       })
       .catch(e => {
         console.log(e);
@@ -30,10 +29,7 @@ class UserProfile extends Component {
 
   render() {
     const {currentProfilePage, login, authToken, setPageName, panelOpen} = this.props;
-    console.log(this.props)
     if (!panelOpen) setPageName('PAGE HIDE');
-    const token = localStorage.getItem('token');
-    console.log(token === true, 'token')
     return (
       <>
         {currentProfilePage === 'setting' ? <UserSetting /> : null}
@@ -45,7 +41,7 @@ class UserProfile extends Component {
         <div className={panelOpen ? 'user-profile active': 'user-profile'}>
           <div className="hello"></div>
           <div className="options">
-          {login || authToken || token
+          {login && authToken
             ? 
               <>
                 <button onClick={() => setPageName('SETTING')}>Setting</button>

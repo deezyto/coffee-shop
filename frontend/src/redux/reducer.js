@@ -1,11 +1,12 @@
+import { getItem } from "../store/localStorage"
 
 const initialState = {
   currentProfilePage: null, 
   panelOpen: false, 
   currentUserProfileForm: null,
   loginStatus: 'idle',
-  login: false,
-  authToken: null
+  login: localStorage.getItem('login') ? true : false,
+  authToken: localStorage.getItem('token') ? localStorage.getItem('token') : false
 }
 
 const reducer = (state = initialState, action) => {
@@ -45,30 +46,10 @@ const reducer = (state = initialState, action) => {
         ...state,
         currentProfilePage: null
       }
-    case 'FORM NAME':
+    case 'CURRENT_USER_PROFILE_FORM':
       return {
         ...state,
-        currentUserProfileForm: 'name'
-      }
-    case 'FORM SURNAME':
-      return {
-        ...state,
-        currentUserProfileForm: 'surname'
-      }
-    case 'FORM PASSWORD':
-      return {
-        ...state,
-        currentUserProfileForm: 'password'
-      }
-    case 'FORM EMAIL':
-      return {
-        ...state,
-        currentUserProfileForm: 'email'
-      }
-    case 'FORM PHONE':
-      return {
-        ...state,
-        currentUserProfileForm: 'phone'
+        currentUserProfileForm: action.payload
       }
     case 'FORM CANCEL':
       return {
@@ -98,7 +79,7 @@ const reducer = (state = initialState, action) => {
     case 'AUTH_TOKEN':
       return {
         ...state,
-        login: action.payload
+        authToken: action.payload
       }
     default:
       return state;

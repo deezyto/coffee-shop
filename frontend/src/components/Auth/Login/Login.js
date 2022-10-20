@@ -4,6 +4,8 @@ import * as Yup from 'yup';
 import {connect} from 'react-redux';
 import * as actions from '../../../redux/actions';
 import Service from '../../../service/service';
+import {getItem, setItem} from '../../../store/localStorage';
+
 import './login.scss';
 class Login extends Component {
   timeoutClearMessage = null;
@@ -12,16 +14,17 @@ class Login extends Component {
     this.props.loginFetching();
     new Service().userLogin(data)
     .then(res => {
+      setItem('userData', res.user);
       localStorage.setItem('token', res.token);
-      localStorage.setItem('userData', JSON.stringify(res.user));
+      localStorage.setItem('login', true);
 
       this.timeoutHideModal = setTimeout(() => {
         this.props.loginFetched();
         this.props.setPageName('PAGE HIDE');
         this.props.isLogin(true);
-        this.props.setAuthToken(true);
-        document.location.reload();
-      }, 3000);
+        this.props.setAuthToken(res.token);
+        //document.location.reload();
+      }, 1000);
     })
     .catch((e) => {
       console.log(e)

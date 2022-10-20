@@ -16,11 +16,11 @@ const userModel = {
   },
   surname: {
     type: String,
-    trim: true
+    trim: true,
   },
   dateBirth: {
     type: Date,
-    trim: true
+    trim: true,
   },
   email: {
     type: String,
@@ -68,7 +68,7 @@ const userModel = {
   address: {
     type: String,
     trim: true,
-    minLength: [10, 'Min length for Your address must be a 10 characters'],
+    maxLength: [100, 'Max length for Your address must be a 100 characters'],
   },
   phone: {
     type: String,
@@ -127,6 +127,17 @@ userSchema.statics.findByCredentials = async function(email, password) {
   }
 
   return user;
+}
+
+userSchema.methods.toJSON = function() {
+  const userObject = this.toObject();
+
+  for (let item in userObject) {
+    if (item === '_id' || item === 'tokens' || item === 'password' || item === '__v') {
+      delete userObject[item];
+    }
+  }
+  return userObject;
 }
 
 userSchema.pre('save', async function(next) {
