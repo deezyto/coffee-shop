@@ -8,7 +8,7 @@ const initialState = {
   authToken: localStorage.getItem('token') ? localStorage.getItem('token') : false,
   users: [],
   usersLoadingStatus: 'idle',
-  admin: false,
+  admin: JSON.parse(localStorage.getItem('userProfileFields'))?.role === 'admin' ? true : false,
   items: [],
   itemsLoadingStatus: 'idle'
 }
@@ -121,6 +121,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         itemsLoadingStatus: 'err'
+      }
+    case 'IS_ADMIN':
+      return {
+        ...state,
+        admin: action.payload
       }
     default:
       return state;

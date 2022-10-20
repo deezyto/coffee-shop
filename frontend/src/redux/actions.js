@@ -13,3 +13,4 @@ export const usersFetchingErr = () => ({type: 'USERS_FETCHING_ERR'});
 export const itemsFetching = () => ({type: 'ITEMS_FETCHING'});
 export const itemsFetched = (data) => ({type: 'ITEMS_FETCHED', payload: data});
 export const itemsFetchingErr = () => ({type: 'ITEMS_FETCHING_ERR'});
+export const isAdmin = (status) => ({type: 'IS_ADMIN', payload: status});
