@@ -10,7 +10,8 @@ const initialState = {
   usersLoadingStatus: 'idle',
   admin: JSON.parse(localStorage.getItem('userProfileFields'))?.role === 'admin' ? true : false,
   items: [],
-  itemsLoadingStatus: 'idle'
+  itemsLoadingStatus: 'idle',
+  adminPanel: false
 }
 
 const reducer = (state = initialState, action) => {
@@ -126,6 +127,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         admin: action.payload
+      }
+    case 'ADMIN_PANEL':
+      return {
+        ...state,
+        adminPanel: action.payload
       }
     default:
       return state;

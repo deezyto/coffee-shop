@@ -6,9 +6,10 @@ import './panel.scss';
 
 class Panel extends Component {
   render() {
-    const {setPanelStatus, panelOpen} = this.props;
+    const {setPanelStatus, panelOpen, admin} = this.props;
     const activeClass = panelOpen ? ' active' : '';
     
+    if (!admin) {
     return (
       <aside>
         <div className="container">
@@ -37,13 +38,15 @@ class Panel extends Component {
           </div>
         </div>
       </aside>
-    )
+      )
+    }
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    panelOpen: state.panelOpen
+    panelOpen: state.panelOpen,
+    admin: state.admin
   }
 }
 

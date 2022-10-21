@@ -6,9 +6,7 @@ import Setting from '../../User/Setting/Setting';
 import './adminPanel.scss';
 
 class AdminPanel extends Component {
-  state = {
-    setting: false
-  }
+
   getItems = (path) => {
     this.props.itemsFetching();
     new Service().adminGetItems(path)
@@ -40,12 +38,6 @@ class AdminPanel extends Component {
     this.getUsers();
   }
 
-  onSetting = () => {
-    this.setState(state => ({
-      setting: !state.setting
-    }))
-  }
-
   render() {
     const {users, items, admin, setPageName, currentProfilePage} = this.props;
     
@@ -57,11 +49,17 @@ class AdminPanel extends Component {
                 <ul>
                   {items.map((item, i) => {
                     return (
-                      <li key={i}>name: {item.title} <br /> description: {item.description}</li>
+                      <li key={i}>
+                        <span>{i + 1}</span> 
+                        {item.title} <br /> 
+                        created: {item.createdAt.split('.')[0]}
+                        <button className="edit">edit</button>
+                      </li>
                     )
                   })}
+                  
                 </ul>
-                
+                <button className="create">Create item</button>
               </div>
   
               <div className="users">
@@ -69,10 +67,17 @@ class AdminPanel extends Component {
                 <ul>
                   {users.map((user, i) => {
                     return (
-                      <li key={i}>name: {user.name} <br /> email: {user.email}</li>
+                      <li key={i}>
+                        <span>{i + 1}</span> 
+                        name: {user.name} <br /> 
+                        email: {user.email} <br /> 
+                        created: {user.createdAt.split('.')[0]}
+                        <button className="edit">edit</button>
+                      </li>
                     )
                   })}
                 </ul>
+                <button className="create">Create user</button>
               </div>
               <div className="orders">
                 <h2>Orders</h2>
@@ -80,16 +85,17 @@ class AdminPanel extends Component {
             </div>
       )
     }
+
     if (admin) {
       return (
         <div className="admin-panel profile">
           <div className="container">
             <button 
               className="setting" 
-              onClick={() => this.onSetting()}
+              onClick={() => setPageName('SETTING')}
               >Setting
               </button>
-              {this.state.setting ? <Setting /> : null}
+              {currentProfilePage === 'setting' ? <Setting /> : null}
             <Panel />
           </div>
         </div>
