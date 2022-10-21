@@ -62,13 +62,17 @@
             border: 1px solid black;
         }
     }
-}
 
-/* .user-panel {
-    svg {
-        fill: black;
+    .filters {
+        display: flex;
+        align-items: center;
+        column-gap: 25px;
+        .filter-option {
+            cursor: pointer;
+            padding: 5px;
+            &:hover {
+                text-decoration: underline dotted;
+            }
+        }
     }
-    span {
-        color: black;
-    }
-} */
+}

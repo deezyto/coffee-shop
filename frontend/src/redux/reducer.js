@@ -6,12 +6,16 @@ const initialState = {
   loginStatus: 'idle',
   login: localStorage.getItem('login') ? true : false,
   authToken: localStorage.getItem('token') ? localStorage.getItem('token') : false,
-  users: [],
+  users: {},
   usersLoadingStatus: 'idle',
   admin: JSON.parse(localStorage.getItem('userProfileFields'))?.role === 'admin' ? true : false,
-  items: [],
+  items: {},
   itemsLoadingStatus: 'idle',
-  adminPanel: false
+  adminPanel: false,
+  filterToogle: {
+    items: false,
+    users: false
+  }
 }
 
 const reducer = (state = initialState, action) => {
@@ -132,6 +136,14 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         adminPanel: action.payload
+      }
+    case 'FILTER_TOOGLE':
+      return {
+        ...state,
+        filterToogle: {
+          ...state.filterToogle,
+          [action.payload]: !state.filterToogle[action.payload]
+        }
       }
     default:
       return state;

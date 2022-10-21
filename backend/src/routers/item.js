@@ -9,6 +9,7 @@ router.get('/coffee', async (req, res) => {
       const parts = req.query.sortBy.split(':');
       sort[parts[0]] = parts[1] === 'asc' ? 1 : -1;
     }
+    const itemLength = await Item.find({});
     const item = await Item.find({}, null, {
       limit: parseInt(req.query.limit),
       skip: parseInt(req.query.skip),
@@ -17,7 +18,7 @@ router.get('/coffee', async (req, res) => {
     if (!item.length) {
       res.status(404).send();
     }
-    res.send(item);
+    res.send({results: item, length: itemLength.length});
   } catch {
     res.status(500).send()
   }

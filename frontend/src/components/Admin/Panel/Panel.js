@@ -19,9 +19,9 @@ class AdminPanel extends Component {
       });
   }
 
-  getUsers = () => {
+  getUsers = (path) => {
     this.props.usersFetching();
-    new Service().adminGetUsers({"Authorization": `Bearer ${this.props.authToken}`})
+    new Service().adminGetUsers(path, {"Authorization": `Bearer ${this.props.authToken}`})
       .then(res => {
         console.log(res)
         this.props.usersFetched(res);
@@ -35,19 +35,33 @@ class AdminPanel extends Component {
 
   componentDidMount() {
     this.getItems('/coffee');
-    this.getUsers();
+    this.getUsers('/users');
   }
 
   render() {
-    const {users, items, admin, setPageName, currentProfilePage} = this.props;
-    
+    const {users, items, admin, setPageName, currentProfilePage, itemsLoadingStatus, usersLoadingStatus, filterToogle} = this.props;
+    const filterCreatedItems = filterToogle.items ? 'asc' : 'desc';
+    const filterCreatedUsers = filterToogle.users ? 'asc' : 'desc';
+
     const Panel = () => {
       return (
             <div className="column">
               <div className="items">
                 <h2>Items {items.length}</h2>
+                <div className="filters">
+                  Filters:
+                  <span onClick={() => {
+                    this.getItems(`/coffee?sortBy=createdAt:${filterCreatedItems}`);
+                    this.props.setFilterToogle('items');
+                    }} className="filter-option">
+                    date created {filterToogle.items ? <>&#x2193;</> : <>&#x2191;</>}
+                  </span>
+                 
+                </div>
+                {itemsLoadingStatus === 'loading' ? <p>Items loading...</p> : null}
+                {itemsLoadingStatus === 'err' ? <p>Items loading err...</p> : null}
                 <ul>
-                  {items.map((item, i) => {
+                  {items.length ? items.results.map((item, i) => {
                     return (
                       <li key={i}>
                         <span>{i + 1}</span> 
@@ -56,7 +70,7 @@ class AdminPanel extends Component {
                         <button className="edit">edit</button>
                       </li>
                     )
-                  })}
+                  }) : null}
                   
                 </ul>
                 <button className="create">Create item</button>
@@ -64,8 +78,19 @@ class AdminPanel extends Component {
   
               <div className="users">
                 <h2>Users {users.length}</h2>
+                <div className="filters">
+                  Filters:
+                  <span onClick={() => {
+                    this.getUsers(`/users?sortBy=createdAt:${filterCreatedUsers}`);
+                    this.props.setFilterToogle('users');
+                    }} className="filter-option">
+                    date created {filterToogle.users ? <>&#x2193;</> : <>&#x2191;</>}
+                  </span>
+                </div>
+                {usersLoadingStatus === 'loading' ? <p>Users loading...</p> : null}
+                {usersLoadingStatus === 'err' ? <p>Users loading err...</p> : null}
                 <ul>
-                  {users.map((user, i) => {
+                  {users.length ? users.results.map((user, i) => {
                     return (
                       <li key={i}>
                         <span>{i + 1}</span> 
@@ -75,7 +100,7 @@ class AdminPanel extends Component {
                         <button className="edit">edit</button>
                       </li>
                     )
-                  })}
+                  }): null}
                 </ul>
                 <button className="create">Create user</button>
               </div>
@@ -96,7 +121,7 @@ class AdminPanel extends Component {
               >Setting
               </button>
               {currentProfilePage === 'setting' ? <Setting /> : null}
-            <Panel />
+              <Panel />
           </div>
         </div>
       )
@@ -113,7 +138,10 @@ const mapStateToProps = (state) => {
     items: state.items,
     users: state.users,
     admin: state.admin,
-    currentProfilePage: state.currentProfilePage
+    currentProfilePage: state.currentProfilePage,
+    usersLoadingStatus: state.usersLoadingStatus,
+    itemsLoadingStatus: state.itemsLoadingStatus,
+    filterToogle: state.filterToogle
   }
 }
 

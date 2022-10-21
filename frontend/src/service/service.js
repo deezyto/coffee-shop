@@ -31,8 +31,8 @@ class Service {
     return await this.getResource(`${this._apiBase}${path}`, 'GET', null, {...this._headers, ...headers})
   }
 
-  adminGetUsers = async (headers = {}) => {
-    return await this.getResource(`${this._apiBase}/users`, 'GET', null, {...this._headers, ...headers})
+  adminGetUsers = async (path, headers = {}) => {
+    return await this.getResource(`${this._apiBase}${path}`, 'GET', null, {...this._headers, ...headers})
   }
 
 }
