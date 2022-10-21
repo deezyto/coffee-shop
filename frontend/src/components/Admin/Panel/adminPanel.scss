@@ -75,4 +75,17 @@
             }
         }
     }
+    
+    .pagenations {
+        ul {
+            display: flex;
+            column-gap: 5px;
+            li {
+                cursor: pointer;
+                &.active-page {
+                    background-color: #ccc;
+                }
+            }
+        }
+    }
 }

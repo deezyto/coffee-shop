@@ -1,4 +1,4 @@
-import {Component} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import * as actions from '../../../redux/actions';
 import Service from '../../../service/service';
@@ -34,15 +34,35 @@ class AdminPanel extends Component {
   }
 
   componentDidMount() {
-    this.getItems('/coffee');
-    this.getUsers('/users');
+    this.getItems('/coffee?limit=5');
+    this.getUsers('/users?limit=5');
   }
 
+  removeActiveClass = () => {
+    document.querySelectorAll('.pagenations ul li').forEach(item => {
+      console.log(item)
+      item.classList.remove('active-page');
+    })
+  }
+
+/*   setActiveClass = (index) => {
+    document.querySelectorAll('.pagenations ul li')[index].classList.add('active-page');
+  }
+ */
   render() {
     const {users, items, admin, setPageName, currentProfilePage, itemsLoadingStatus, usersLoadingStatus, filterToogle} = this.props;
     const filterCreatedItems = filterToogle.items ? 'asc' : 'desc';
     const filterCreatedUsers = filterToogle.users ? 'asc' : 'desc';
 
+    const pageItems = [];
+
+    for (let i = 0; i < items.length; i++) {
+      pageItems.push(<li key={i} className={i === 0 ? 'active-page' : ''} onClick={(e) => {
+        this.getItems(`/coffee?limit=5&skip=${i*5}:${filterCreatedItems}`);
+        this.removeActiveClass();
+        e.currentTarget.classList.add('active-page')
+        }}>{i + 1}</li>);
+    }
     const Panel = () => {
       return (
             <div className="column">
@@ -51,7 +71,7 @@ class AdminPanel extends Component {
                 <div className="filters">
                   Filters:
                   <span onClick={() => {
-                    this.getItems(`/coffee?sortBy=createdAt:${filterCreatedItems}`);
+                    this.getItems(`/coffee?limit=5&sortBy=createdAt:${filterCreatedItems}`);
                     this.props.setFilterToogle('items');
                     }} className="filter-option">
                     date created {filterToogle.items ? <>&#x2193;</> : <>&#x2191;</>}
@@ -73,6 +93,9 @@ class AdminPanel extends Component {
                   }) : null}
                   
                 </ul>
+                <div className="pagenations">
+                  <ul>{pageItems}</ul>
+                </div>
                 <button className="create">Create item</button>
               </div>
   
@@ -81,7 +104,7 @@ class AdminPanel extends Component {
                 <div className="filters">
                   Filters:
                   <span onClick={() => {
-                    this.getUsers(`/users?sortBy=createdAt:${filterCreatedUsers}`);
+                    this.getUsers(`/users?limit=5&sortBy=createdAt:${filterCreatedUsers}`);
                     this.props.setFilterToogle('users');
                     }} className="filter-option">
                     date created {filterToogle.users ? <>&#x2193;</> : <>&#x2191;</>}
