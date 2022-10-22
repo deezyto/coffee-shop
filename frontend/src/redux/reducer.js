@@ -1,5 +1,6 @@
 const initialState = {
   currentProfilePage: null, 
+  currentAdminPage: null,
   panelOpen: false, 
   currentUserProfileForm: null,
   userProfileFields: localStorage.getItem('userProfileFields') ? JSON.parse(localStorage.getItem('userProfileFields')) : null,
@@ -54,6 +55,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         currentProfilePage: null
+      }
+    case 'ITEMS_CREATE':
+      return {
+        ...state,
+        currentAdminPage: 'items_create_form'
       }
     case 'CURRENT_USER_PROFILE_FORM':
       return {

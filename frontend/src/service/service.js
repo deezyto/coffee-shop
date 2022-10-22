@@ -35,6 +35,10 @@ class Service {
     return await this.getResource(`${this._apiBase}${path}`, 'GET', null, {...this._headers, ...headers})
   }
 
+  adminCreateItem = async (path, body, headers = {}) => {
+    return await this.getResource(`${this._apiBase}${path}`, 'POST', JSON.stringify(body), {...this._headers, ...headers})
+  }
+
 }
 
 export default Service;

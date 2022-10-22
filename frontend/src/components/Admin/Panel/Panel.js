@@ -4,7 +4,7 @@ import * as actions from '../../../redux/actions';
 import Service from '../../../service/service';
 import Setting from '../../User/Setting/Setting';
 import './adminPanel.scss';
-
+import ItemsForm from '../Forms/Items';
 class AdminPanel extends Component {
 
   getItems = (path) => {
@@ -50,7 +50,7 @@ class AdminPanel extends Component {
   }
  */
   render() {
-    const {users, items, admin, setPageName, currentProfilePage, itemsLoadingStatus, usersLoadingStatus, filterToogle} = this.props;
+    const {users, items, admin, setPageName, currentProfilePage, currentAdminPage, itemsLoadingStatus, usersLoadingStatus, filterToogle} = this.props;
     const filterCreatedItems = filterToogle.items ? 'asc' : 'desc';
     const filterCreatedUsers = filterToogle.users ? 'asc' : 'desc';
 
@@ -96,8 +96,9 @@ class AdminPanel extends Component {
                 <div className="pagenations">
                   <ul>{pageItems}</ul>
                 </div>
-                <button className="create">Create item</button>
+                <button onClick={() => setPageName('ITEMS_CREATE')} className="create">Create item</button>
               </div>
+              {currentAdminPage === 'items_create_form' ? <ItemsForm /> : null}
   
               <div className="users">
                 <h2>Users {users.length}</h2>
@@ -162,6 +163,7 @@ const mapStateToProps = (state) => {
     users: state.users,
     admin: state.admin,
     currentProfilePage: state.currentProfilePage,
+    currentAdminPage: state.currentAdminPage,
     usersLoadingStatus: state.usersLoadingStatus,
     itemsLoadingStatus: state.itemsLoadingStatus,
     filterToogle: state.filterToogle

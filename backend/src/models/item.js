@@ -13,6 +13,19 @@ const itemSchema = new mongoose.Schema({
     trim: true,
     minLength: [5, 'Min length for title must be a 5 characters'],
     maxLength: [100000, 'Max length for title must be a 100000 characters'],
+  },
+  category: {
+    type: Array,
+    require: true,
+    trim: true,
+    maxLength: [50, 'Max category 50']
+  },
+  uri: {
+    type: String,
+    trim: true,
+    unique: true,
+    minLength: [5, 'Min length for title must be a 5 characters'],
+    maxLength: [100000, 'Max length for title must be a 100000 characters']
   }
 }, {
   timestamps: true

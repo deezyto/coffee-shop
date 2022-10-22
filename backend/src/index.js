@@ -2,8 +2,9 @@ require('./db/connect');
 const express = require('express');
 const cors = require("cors");
 const userRouter = require('./routers/user');
-const adminItemRouter = require('./routers/admin/item');
 const itemRouter = require('./routers/item');
+const categoryRouter = require('./routers/category');
+
 const app = express();
 const port = process.env.PORT || 5025
 const corsOptions ={
@@ -18,7 +19,7 @@ app.use(express.json());
 
 app.use(userRouter);
 app.use(itemRouter);
-app.use(adminItemRouter);
+app.use(categoryRouter);
 
 app.listen(port, () => {
 	console.log(`Server start on ${port} port`);
