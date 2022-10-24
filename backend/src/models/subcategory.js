@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const itemSchema = new mongoose.Schema({
+const subCategorySchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
@@ -14,19 +14,12 @@ const itemSchema = new mongoose.Schema({
     minLength: [5, 'Min length for title must be a 5 characters'],
     maxLength: [100000, 'Max length for title must be a 100000 characters'],
   },
-
-  images: [{
-    image: {
-    type: Buffer
-  }
-  }],
   slug: {
     type: String,
     trim: true,
-    unique: true,
+    require: true,
     minLength: [5, 'Min length for title must be a 5 characters'],
-    maxLength: [100, 'Max length for title must be a 100000 characters'],
-    required: true
+    maxLength: [100, 'Max length for title must be a 100000 characters']
   },
   metaTags: {
     title: {
@@ -40,14 +33,18 @@ const itemSchema = new mongoose.Schema({
       maxLength: [500, 'Max length for description must be a 500 characters']
     }
   },
-  categories: [{
-      type: mongoose.Schema.Types.ObjectId,
-      //створюєм посилання на модель користувача
-      ref: 'Category'
-    }]
+  parentCategories: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category'
+  }],
+  items: [{
+    type: mongoose.Schema.Types.ObjectId,
+    //створюєм посилання на модель користувача
+    ref: 'Item'
+  }]
 }, {
   timestamps: true
 })
 
-const Item = mongoose.model('Item', itemSchema);
-module.exports = Item;
+const SubCategory = mongoose.model('SubCategory', subCategorySchema);
+module.exports = SubCategory;

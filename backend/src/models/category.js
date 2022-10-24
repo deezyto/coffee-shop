@@ -14,19 +14,34 @@ const categorySchema = new mongoose.Schema({
     minLength: [5, 'Min length for title must be a 5 characters'],
     maxLength: [100000, 'Max length for title must be a 100000 characters'],
   },
-  uri: {
+  slug: {
     type: String,
     trim: true,
     require: true,
     minLength: [5, 'Min length for title must be a 5 characters'],
     maxLength: [100, 'Max length for title must be a 100000 characters']
   },
-  items: {
-    type: Array,
-    unique: true,
-    trim: true,
-    require: true
-  }
+  metaTags: {
+    title: {
+      type: String,
+      minLength: [5, 'Min length for title must be a 5 characters'],
+      maxLength: [100, 'Max length for title must be a 100 characters']
+    },
+    description: {
+      type: String,
+      minLength: [5, 'Min length for description must be a 5 characters'],
+      maxLength: [500, 'Max length for description must be a 500 characters']
+    }
+  },
+  subCategories: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'SubCategory'
+  }],
+  items: [{
+    type: mongoose.Schema.Types.ObjectId,
+    //створюєм посилання на модель користувача
+    ref: 'Item'
+  }]
 }, {
   timestamps: true
 })
