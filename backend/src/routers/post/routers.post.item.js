@@ -3,15 +3,16 @@ const router = new express.Router();
 const auth = require('../../middleware/middleware.auth');
 const Item = require('../../models/model.item');
 const Category = require('../../models/model.category');
+const SubCategory = require('../../models/model.subcategory');
 
 //коли створюється новий item
 //потрібно в категорію яку хочеш добавити цей item
 //добавити id item, і в item добавити id category
-const addItemToCategory = function (categoryId = [], itemId = '') {
+const addItemToCategory = function (model, categoryId = [], itemId = '') {
   //перебираєм масив з id категорій які має item
   categoryId.forEach(async category => {
     //шукаємо одну із категорій
-    await Category.findByIdAndUpdate(
+    await model.findByIdAndUpdate(
       category,
       //добавляємо створений item
       { $push: { items: itemId } },
@@ -20,12 +21,12 @@ const addItemToCategory = function (categoryId = [], itemId = '') {
   });
 };
 
-const addCategoryToItem = function (categoryId = [], itemId = '') {
+const addCategoryToItem = function (model, categoryId = [], itemId = '') {
   //перебираємо масив з id категорій які має item
   categoryId.forEach(async id => {
     //при кожному проході категорії з масива
     //шукаємо item в якому повинна бути ця категорія
-    await Item.findByIdAndUpdate(
+    await model.findByIdAndUpdate(
       itemId,
       { $push: { categories: id } },
       { new: true, useFindAndModify: false }
@@ -33,7 +34,7 @@ const addCategoryToItem = function (categoryId = [], itemId = '') {
   });
 };
 
-//create item in category
+//create item in category or in subcategory
 router.post('/admin/create/item', auth, async (req, res) => {
   try {
     if (req.admin) {
@@ -48,8 +49,13 @@ router.post('/admin/create/item', auth, async (req, res) => {
       const item = new Item(req.body);
       await item.save();
 
-      addItemToCategory(req.body.category, item._id);
-      addCategoryToItem(req.body.category, item._id);
+      if (req.body.categoriesArray) {
+        addItemToCategory(Category, req.body.categoriesArray, item._id);
+        addCategoryToItem(Item, req.body.categoriesArray, item._id);
+      } else if (req.body.subCategoriesArray) {
+        addItemToCategory(SubCategory, req.body.subCategoriesArray, item._id);
+        addCategoryToItem(Item, req.body.subCategoriesArray, item._id);
+      }
       
       res.status(201).send(item);
     }
