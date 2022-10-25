@@ -1,9 +1,10 @@
 require('./db/db.connect');
 const express = require('express');
 const cors = require("cors");
-const userRouter = require('./routers/routers.user');
-const itemRouter = require('./routers/routers.item');
-const categoryRouter = require('./routers/routers.category');
+const routersGet = require('./routers/routers.get');
+const routersPost = require('./routers/routers.post');
+const routersPut = require('./routers/routers.put');
+const routersDelete = require('./routers/routers.delete');
 
 const app = express();
 const port = process.env.PORT || 5025
@@ -17,9 +18,10 @@ app.use(cors(corsOptions))
 
 app.use(express.json());
 
-app.use(userRouter);
-app.use(itemRouter);
-app.use(categoryRouter);
+app.use(routersGet);
+app.use(routersPost);
+app.use(routersPut);
+app.use(routersDelete);
 
 app.listen(port, () => {
 	console.log(`Server start on ${port} port`);

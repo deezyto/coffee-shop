@@ -1,9 +1,9 @@
 const express = require('express');
 const router = new express.Router();
-const auth = require('../middleware/middleware.auth');
-const Item = require('../models/model.item');
-const Category = require('../models/model.category');
-const SubCategory = require('../models/model.subcategory');
+const auth = require('../../middleware/middleware.auth');
+const Item = require('../../models/model.item');
+const Category = require('../../models/model.category');
+const SubCategory = require('../../models/model.subcategory');
 
 router.post('/action/category', auth, async (req, res) => {
   try {
