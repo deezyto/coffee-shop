@@ -1,9 +1,9 @@
-require('./db/connect');
+require('./db/db.connect');
 const express = require('express');
 const cors = require("cors");
-const userRouter = require('./routers/user');
-const itemRouter = require('./routers/item');
-const categoryRouter = require('./routers/category');
+const userRouter = require('./routers/routers.user');
+const itemRouter = require('./routers/routers.item');
+const categoryRouter = require('./routers/routers.category');
 
 const app = express();
 const port = process.env.PORT || 5025
