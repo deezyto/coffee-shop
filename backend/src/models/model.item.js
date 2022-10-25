@@ -14,11 +14,16 @@ const itemSchema = new mongoose.Schema({
     minLength: [5, 'Min length for title must be a 5 characters'],
     maxLength: [100000, 'Max length for title must be a 100000 characters'],
   },
-
   images: [{
     image: {
-    type: Buffer
-  }
+      type: Buffer
+    },
+    name: {
+      type: String,
+      trim: true,
+      minLength: [5, 'Min length for image name must be a 5 characters'],
+      maxLength: [100, 'Max length for image name must be a 100 characters'],
+    }
   }],
   slug: {
     type: String,

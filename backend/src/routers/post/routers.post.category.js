@@ -3,7 +3,6 @@ const router = new express.Router();
 const auth = require('../../middleware/middleware.auth');
 const Item = require('../../models/model.item');
 const Category = require('../../models/model.category');
-const SubCategory = require('../../models/model.subcategory');
 
 router.post('/action/category', auth, async (req, res) => {
   try {
@@ -33,7 +32,7 @@ const addSubCategoryToParentCategory = function (parentCategoriesId = [], subCat
 
 const addParentCategoryToSubCategory = function (parentCategoriesId = [], subCategoryId = '') {
   parentCategoriesId.forEach(async id => {
-    await SubCategory.findByIdAndUpdate(
+    await Category.findByIdAndUpdate(
       subCategoryId,
       { $push: { parentCategories: id } },
       { new: true, useFindAndModify: false }
@@ -43,17 +42,16 @@ const addParentCategoryToSubCategory = function (parentCategoriesId = [], subCat
 
 //body
 //for parent subcategory:
-//categories: [category1, category2]
+//categoriesArray: [category1, category2]
 //for subcategory:
 //title, desc
 router.post('/action/category/subcategory', auth, async (req, res) => {
   try {
     if (req.admin) {
-      const category = new SubCategory(req.body);
+      const category = new Category(req.body);
       await category.save();
-      addSubCategoryToParentCategory(req.body.categories, category._id);
-      addParentCategoryToSubCategory(req.body.categories, category._id);
-      await category.save()
+      addSubCategoryToParentCategory(req.body.categoriesArray, category._id);
+      addParentCategoryToSubCategory(req.body.categoriesArray, category._id);
       res.status(201).send(category);
     }
     res.status(403).send();

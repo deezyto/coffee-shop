@@ -34,13 +34,14 @@ const categorySchema = new mongoose.Schema({
       maxLength: [500, 'Max length for description must be a 500 characters']
     }
   },
+  parentCategories: [{
+    type: mongoose.Schema.Types.ObjectId
+  }],
   subCategories: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'SubCategory'
+    type: mongoose.Schema.Types.ObjectId
   }],
   items: [{
     type: mongoose.Schema.Types.ObjectId,
-    //створюєм посилання на модель користувача
     ref: 'Item'
   }]
 }, {
