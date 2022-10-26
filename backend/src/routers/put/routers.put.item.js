@@ -24,25 +24,47 @@ router.put('/update/item/:id', auth, async (req, res) => {
         item[field] = req.body[field];
       })
 
-      //remove categories from item
+      //remove category from item
       if (copy.removeCategories) {
-        item.removeCategories.forEach(async categoryForRemove => {
-          const newArray = item.parentCategories.filter(category => category !== categoryForRemove);;
-          item.parentCategories = newArray;
-          await item.save();
+        const objCategories = {};
+        item.parentCategories.forEach(item => {
+          objCategories[item] = item;
         });
+
+        copy.removeCategories.forEach(item => {
+          delete objCategories[item];
+        });
+
+        await Item.findByIdAndUpdate(
+          req.params.id,
+          { $set: { parentCategories: Object.keys(objCategories) } },
+          { new: true, useFindAndModify: false }
+        );
       }
 
       //add categories to item
-      if (copy.addParentCategories.length) {
-        item.parentCategories = item.parentCategories.concat(req.body.addParentCategories);
+      if (copy.addParentCategories) {
+        const objCategories = {};
+        item.parentCategories.forEach(item => {
+          objCategories[item] = item;
+        });
+
+        copy.addParentCategories.forEach(item => {
+          objCategories[item] = item;
+        });
+
+        await Item.findByIdAndUpdate(
+          req.params.id,
+          { $set: { parentCategories: Object.keys(objCategories) } },
+          { new: true, useFindAndModify: false }
+        );
       }
 
       await item.save();
       res.send(item);
       }
-  } catch {
-    res.status(500).send();
+  } catch (e) {
+    res.status(500).send({err: e});
   }
 });
 
