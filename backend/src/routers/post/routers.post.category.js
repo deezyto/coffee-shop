@@ -4,7 +4,7 @@ const auth = require('../../middleware/middleware.auth');
 const Item = require('../../models/model.item');
 const Category = require('../../models/model.category');
 
-router.post('/action/category', auth, async (req, res) => {
+router.post('/create/category', auth, async (req, res) => {
   try {
     if (req.admin) {
       const category = new Category(req.body);
@@ -45,7 +45,7 @@ const addParentCategoryToSubCategory = function (parentCategoriesId = [], subCat
 //categoriesArray: [category1, category2]
 //for subcategory:
 //title, desc
-router.post('/action/category/subcategory', auth, async (req, res) => {
+router.post('/create/subcategory', auth, async (req, res) => {
   try {
     if (req.admin) {
       const category = new Category(req.body);

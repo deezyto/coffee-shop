@@ -27,14 +27,14 @@ const addCategoryToItem = function (categoryId = [], itemId = '') {
     //шукаємо item в якому повинна бути ця категорія
     await Item.findByIdAndUpdate(
       itemId,
-      { $push: { categories: id } },
+      { $push: { parentCategories: id } },
       { new: true, useFindAndModify: false }
     );
   });
 };
 
 //create item in category or in subcategory
-router.post('/admin/create/item', auth, async (req, res) => {
+router.post('/create/item', auth, async (req, res) => {
   try {
     if (req.admin) {
       //search item on slug
