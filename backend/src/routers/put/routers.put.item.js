@@ -9,31 +9,23 @@ router.put('/update/item/:id', auth, async (req, res) => {
     if (req.admin) {
       const item = await Item.findById(req.params.id);
       const updates = Object.keys(req.body);
-      const copy = {...req.body};
-      const allowedFields = ['title', 'description', 'slug', 'images', 'metaTags', 'removeCategories', 'addParentCategories'];
+      const allowedFields = ['title', 'description', 'slug', 'images', 'metaTags', 'removeCategories', 'addCategories'];
       const isValidUpdates = updates.every(elem => allowedFields.includes(elem));
 
       if (!isValidUpdates) {
         return res.status(400).send({err: 'This updates not allowed'});
       }
 
-      delete req.body.removeCategories;
-      delete req.body.addParentCategories;
-
-      updates.forEach(field => {
-        item[field] = req.body[field];
-      })
-
       const removeCategoriesFromItem = async () => {
         await Item.findByIdAndUpdate(
           req.params.id,
-          { $pullAll: { parentCategories: copy.removeCategories } },
+          { $pullAll: { parentCategories: req.body.removeCategories } },
           { new: true, useFindAndModify: false }
         );
       }
 
       const removeItemFromCategories = async () => {
-        copy.removeCategories.forEach(async categoryId => {
+        req.body.removeCategories.forEach(async categoryId => {
           await Category.findByIdAndUpdate(
             categoryId,
             { $pull: { items: req.params.id } },
@@ -45,13 +37,13 @@ router.put('/update/item/:id', auth, async (req, res) => {
       const addCategoriesToItem = async () => {
         await Item.findByIdAndUpdate(
           req.params.id,
-          { $addToSet: { parentCategories: copy.addParentCategories } },
+          { $addToSet: { parentCategories: req.body.addCategories } },
           { new: true, useFindAndModify: false }
         );
       }
 
       const addItemToCategories = async () => {
-        copy.addParentCategories.forEach(async categoryId => {
+        req.body.addCategories.forEach(async categoryId => {
           await Category.findByIdAndUpdate(
             categoryId,
             { $addToSet: { items: req.params.id } },
@@ -60,18 +52,26 @@ router.put('/update/item/:id', auth, async (req, res) => {
         });
       }
 
-      if (copy.removeCategories) {
+      if (req.body.removeCategories) {
         await removeCategoriesFromItem();
         await removeItemFromCategories();
       } 
       
-      if (copy.addParentCategories) {
+      if (req.body.addCategories) {
         await addCategoriesToItem();
         await addItemToCategories();
       }
+
+      delete req.body.removeCategories;
+      delete req.body.addCategories;
+
+      updates.forEach(field => {
+        item[field] = req.body[field];
+      })
       
       await item.save();
       res.send(item);
+      
       }
   } catch (e) {
     res.status(500).send({err: e});
