@@ -2,12 +2,12 @@ const express = require('express');
 const router = new express.Router();
 const auth = require('../../middleware/middleware.auth');
 const Item = require('../../models/model.item');
+const Category = require('../../models/model.category');
 
 router.put('/update/item/:id', auth, async (req, res) => {
   try {
     if (req.admin) {
       const item = await Item.findById(req.params.id);
-      console.log(item)
       const updates = Object.keys(req.body);
       const copy = {...req.body};
       const allowedFields = ['title', 'description', 'slug', 'images', 'metaTags', 'removeCategories', 'addParentCategories'];
@@ -24,42 +24,52 @@ router.put('/update/item/:id', auth, async (req, res) => {
         item[field] = req.body[field];
       })
 
-      //remove category from item
+      const removeCategoriesFromItem = async () => {
+        await Item.findByIdAndUpdate(
+          req.params.id,
+          { $pullAll: { parentCategories: copy.removeCategories } },
+          { new: true, useFindAndModify: false }
+        );
+      }
+
+      const removeItemFromCategories = async () => {
+        copy.removeCategories.forEach(async categoryId => {
+          await Category.findByIdAndUpdate(
+            categoryId,
+            { $pull: { items: req.params.id } },
+            { new: true, useFindAndModify: false }
+          );
+        });
+      };
+      
+      const addCategoriesToItem = async () => {
+        await Item.findByIdAndUpdate(
+          req.params.id,
+          { $addToSet: { parentCategories: copy.addParentCategories } },
+          { new: true, useFindAndModify: false }
+        );
+      }
+
+      const addItemToCategories = async () => {
+        copy.addParentCategories.forEach(async categoryId => {
+          await Category.findByIdAndUpdate(
+            categoryId,
+            { $addToSet: { items: req.params.id } },
+            { new: true, useFindAndModify: false }
+          );
+        });
+      }
+
       if (copy.removeCategories) {
-        const objCategories = {};
-        item.parentCategories.forEach(item => {
-          objCategories[item] = item;
-        });
-
-        copy.removeCategories.forEach(item => {
-          delete objCategories[item];
-        });
-
-        await Item.findByIdAndUpdate(
-          req.params.id,
-          { $set: { parentCategories: Object.keys(objCategories) } },
-          { new: true, useFindAndModify: false }
-        );
-      }
-
-      //add categories to item
+        await removeCategoriesFromItem();
+        await removeItemFromCategories();
+      } 
+      
       if (copy.addParentCategories) {
-        const objCategories = {};
-        item.parentCategories.forEach(item => {
-          objCategories[item] = item;
-        });
-
-        copy.addParentCategories.forEach(item => {
-          objCategories[item] = item;
-        });
-
-        await Item.findByIdAndUpdate(
-          req.params.id,
-          { $set: { parentCategories: Object.keys(objCategories) } },
-          { new: true, useFindAndModify: false }
-        );
+        await addCategoriesToItem();
+        await addItemToCategories();
       }
-
+      
       await item.save();
       res.send(item);
       }

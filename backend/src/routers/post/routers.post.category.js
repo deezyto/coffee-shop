@@ -24,7 +24,7 @@ const addSubCategoryToParentCategory = function (parentCategoriesId = [], subCat
     await Category.findByIdAndUpdate(
       category,
       //добавляємо створену субкатегорію
-      { $push: { subCategories: subCategoryId } },
+      { $addToSet: { subCategories: subCategoryId } },
       { new: true, useFindAndModify: false }
     );
   });
@@ -34,7 +34,7 @@ const addParentCategoryToSubCategory = function (parentCategoriesId = [], subCat
   parentCategoriesId.forEach(async id => {
     await Category.findByIdAndUpdate(
       subCategoryId,
-      { $push: { parentCategories: id } },
+      { $addToSet: { parentCategories: id } },
       { new: true, useFindAndModify: false }
     );
   });

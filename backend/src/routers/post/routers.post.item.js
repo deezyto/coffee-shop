@@ -14,7 +14,7 @@ const addItemToCategory = function (categoryId = [], itemId = '') {
     await Category.findByIdAndUpdate(
       category,
       //добавляємо створений item
-      { $push: { items: itemId } },
+      { $addToSet: { items: itemId } },
       { new: true, useFindAndModify: false }
     );
   });
@@ -27,7 +27,7 @@ const addCategoryToItem = function (categoryId = [], itemId = '') {
     //шукаємо item в якому повинна бути ця категорія
     await Item.findByIdAndUpdate(
       itemId,
-      { $push: { parentCategories: id } },
+      { $addToSet: { parentCategories: id } },
       { new: true, useFindAndModify: false }
     );
   });
