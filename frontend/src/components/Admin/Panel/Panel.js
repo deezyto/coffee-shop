@@ -6,10 +6,13 @@ import Setting from '../../User/Setting/Setting';
 import './adminPanel.scss';
 import ItemsForm from '../Forms/Items';
 class AdminPanel extends Component {
-
+  state = {
+    currentItemsPage: 0,
+    limit: 5
+  }
   getItems = (path) => {
     this.props.itemsFetching();
-    new Service().adminGetItems(path)
+    new Service().adminGetItems(path, {"Authorization": `Bearer ${this.props.authToken}`})
       .then(res => {
         console.log(res)
         this.props.itemsFetched(res);
@@ -34,33 +37,27 @@ class AdminPanel extends Component {
   }
 
   componentDidMount() {
-    this.getItems('/coffee?limit=5');
+    this.getItems(`/items?limit=${this.state.limit}`);
     this.getUsers('/users?limit=5');
   }
 
-  removeActiveClass = () => {
-    document.querySelectorAll('.pagenations ul li').forEach(item => {
-      console.log(item)
-      item.classList.remove('active-page');
+  onSetCurrentItemsPage = (index) => {
+    this.setState((state) => {
+      state.currentItemsPage = index;
     })
   }
 
-/*   setActiveClass = (index) => {
-    document.querySelectorAll('.pagenations ul li')[index].classList.add('active-page');
-  }
- */
   render() {
     const {users, items, admin, setPageName, currentProfilePage, currentAdminPage, itemsLoadingStatus, usersLoadingStatus, filterToogle} = this.props;
     const filterCreatedItems = filterToogle.items ? 'asc' : 'desc';
     const filterCreatedUsers = filterToogle.users ? 'asc' : 'desc';
 
     const pageItems = [];
-
-    for (let i = 0; i < items.length; i++) {
-      pageItems.push(<li key={i} className={i === 0 ? 'active-page' : ''} onClick={(e) => {
-        this.getItems(`/coffee?limit=5&skip=${i*5}:${filterCreatedItems}`);
-        this.removeActiveClass();
-        e.currentTarget.classList.add('active-page')
+    const {limit} = this.state;
+    for (let i = 0; i < Math.ceil(items.length / limit); i++) {
+      pageItems.push(<li key={i} className={this.state.currentItemsPage === i * limit ? 'active-page' : ''} onClick={(e) => {
+        this.getItems(`/items?limit=${limit}&skip=${i * limit}:${filterCreatedItems}`);
+        this.onSetCurrentItemsPage(i * limit);
         }}>{i + 1}</li>);
     }
     const Panel = () => {
@@ -71,7 +68,7 @@ class AdminPanel extends Component {
                 <div className="filters">
                   Filters:
                   <span onClick={() => {
-                    this.getItems(`/coffee?limit=5&sortBy=createdAt:${filterCreatedItems}`);
+                    this.getItems(`/items?limit=${limit}&sortBy=createdAt:${filterCreatedItems}`);
                     this.props.setFilterToogle('items');
                     }} className="filter-option">
                     date created {filterToogle.items ? <>&#x2193;</> : <>&#x2191;</>}
@@ -84,7 +81,7 @@ class AdminPanel extends Component {
                   {items.length ? items.results.map((item, i) => {
                     return (
                       <li key={i}>
-                        <span>{i + 1}</span> 
+                        <span>{i + 1 + this.state.currentItemsPage}</span> 
                         {item.title} <br /> 
                         created: {item.createdAt.split('.')[0]}
                         <button className="edit">edit</button>

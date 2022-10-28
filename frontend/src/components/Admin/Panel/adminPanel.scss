@@ -80,6 +80,9 @@
         ul {
             display: flex;
             column-gap: 5px;
+            overflow: hidden;
+            flex-wrap: wrap;
+            max-width: 500px;
             li {
                 cursor: pointer;
                 &.active-page {
