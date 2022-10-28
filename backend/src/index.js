@@ -18,10 +18,10 @@ app.use(cors(corsOptions))
 
 app.use(express.json());
 
-app.use(routersGet);
 app.use(routersPost);
 app.use(routersPut);
 app.use(routersDelete);
+app.use(routersGet);
 
 app.listen(port, () => {
 	console.log(`Server start on ${port} port`);

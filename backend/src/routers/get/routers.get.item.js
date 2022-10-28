@@ -21,7 +21,7 @@ router.get('*', categoryMiddleware, async (req, res) => {
         skip: parseInt(req.query.skip),
         sort
       });
-      res.send({items, subCategory: req.category.subCategories});
+      res.send({items, category: req.category});
     } else if (req.item) {
       res.status(200).send(req.item);
     }

@@ -25,6 +25,7 @@ router.delete('/delete/item/:id', auth, async (req, res) => {
       item.remove();
       res.send(item);
     }
+    
   } catch {
     res.status(400).send();
   }

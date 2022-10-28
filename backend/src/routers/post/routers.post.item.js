@@ -4,16 +4,10 @@ const auth = require('../../middleware/middleware.auth');
 const Item = require('../../models/model.item');
 const Category = require('../../models/model.category');
 
-//коли створюється новий item
-//потрібно в категорію яку хочеш добавити цей item
-//добавити id item, і в item добавити id category
 const addItemToCategory = function (categoryId = [], itemId = '') {
-  //перебираєм масив з id категорій які має item
   categoryId.forEach(async category => {
-    //шукаємо одну із категорій
     await Category.findByIdAndUpdate(
       category,
-      //добавляємо створений item
       { $addToSet: { items: itemId } },
       { new: true, useFindAndModify: false }
     );
@@ -21,10 +15,7 @@ const addItemToCategory = function (categoryId = [], itemId = '') {
 };
 
 const addCategoryToItem = function (categoryId = [], itemId = '') {
-  //перебираємо масив з id категорій які має item
   categoryId.forEach(async id => {
-    //при кожному проході категорії з масива
-    //шукаємо item в якому повинна бути ця категорія
     await Item.findByIdAndUpdate(
       itemId,
       { $addToSet: { parentCategories: id } },
@@ -48,8 +39,10 @@ router.post('/create/item', auth, async (req, res) => {
       const item = new Item(req.body);
       await item.save();
 
-      addItemToCategory(req.body.categoriesArray, item._id);
-      addCategoryToItem(req.body.categoriesArray, item._id);
+      if (req.body.addParentCategories) {
+        addItemToCategory(req.body.addParentCategories, item._id);
+        addCategoryToItem(req.body.addParentCategories, item._id);
+      }
       
       res.status(201).send(item);
     }

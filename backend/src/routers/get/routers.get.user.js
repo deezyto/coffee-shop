@@ -22,6 +22,7 @@ router.get('/users', auth, async (req, res) => {
       }
       res.send({results: user, length: userLength.length});
     }
+    res.status(403).send({err: 'Your do not have access rights'})
   } catch {
     res.status(500).send();
   }

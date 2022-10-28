@@ -4,12 +4,9 @@ const auth = require('../../middleware/middleware.auth');
 const Category = require('../../models/model.category');
 
 const addSubCategoryToParentCategory = function (parentCategoriesId = [], subCategoryId = '') {
-  //перебираєм масив з id parent категорій які має subcategory
   parentCategoriesId.forEach(async category => {
-    //шукаємо одну із категорій
     await Category.findByIdAndUpdate(
       category,
-      //добавляємо створену субкатегорію
       { $addToSet: { subCategories: subCategoryId } },
       { new: true, useFindAndModify: false }
     );
@@ -29,6 +26,12 @@ const addParentCategoryToSubCategory = function (parentCategoriesId = [], subCat
 router.post('/create/category', auth, async (req, res) => {
   try {
     if (req.admin) {
+      const checkUri = await Category.findOne({slug: req.body.slug});
+      
+      if (checkUri) {
+        res.status(400).send({err: `Uri ${req.body.slug} is available. Please choose another unique uri`});
+      }
+
       const category = new Category(req.body);
       await category.save();
       if (req.body.addParentCategories) {
