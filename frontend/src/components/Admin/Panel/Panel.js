@@ -51,11 +51,13 @@ class AdminPanel extends Component {
     const {users, items, admin, setPageName, currentProfilePage, currentAdminPage, itemsLoadingStatus, usersLoadingStatus, filterToogle} = this.props;
     const filterCreatedItems = filterToogle.items ? 'asc' : 'desc';
     const filterCreatedUsers = filterToogle.users ? 'asc' : 'desc';
-
+    //prev, next
+    //first, last
+    //< prev 1...4 5 6...50 next >
     const pageItems = [];
-    const {limit} = this.state;
+    const {limit, currentItemsPage} = this.state;
     for (let i = 0; i < Math.ceil(items.length / limit); i++) {
-      pageItems.push(<li key={i} className={this.state.currentItemsPage === i * limit ? 'active-page' : ''} onClick={(e) => {
+      pageItems.push(<li key={i} className={currentItemsPage === i * limit ? 'active-page' : ''} onClick={(e) => {
         this.getItems(`/items?limit=${limit}&skip=${i * limit}:${filterCreatedItems}`);
         this.onSetCurrentItemsPage(i * limit);
         }}>{i + 1}</li>);
@@ -81,7 +83,7 @@ class AdminPanel extends Component {
                   {items.length ? items.results.map((item, i) => {
                     return (
                       <li key={i}>
-                        <span>{i + 1 + this.state.currentItemsPage}</span> 
+                        <span>{i + 1 + currentItemsPage}</span> 
                         {item.title} <br /> 
                         created: {item.createdAt.split('.')[0]}
                         <button className="edit">edit</button>
