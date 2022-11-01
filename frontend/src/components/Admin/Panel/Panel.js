@@ -8,7 +8,9 @@ import ItemsForm from '../Forms/Items';
 class AdminPanel extends Component {
   state = {
     currentItemsPage: 0,
-    limit: 5
+    limit: 5,
+    pageBlockCurrent: 0,
+    pageBlockSize: 3
   }
   getItems = (path) => {
     this.props.itemsFetching();
@@ -47,21 +49,76 @@ class AdminPanel extends Component {
     })
   }
 
+  onSetNextPageBlock = () => {
+    this.setState((state) => {
+      state.pageBlockCurrent = state.pageBlockCurrent + state.pageBlockSize;
+    })
+  }
+
+  onSetPrevPageBlock = () => {
+    this.setState((state) => {
+      state.pageBlockCurrent = state.pageBlockCurrent - state.pageBlockSize;
+    })
+  }
+  
+  onSetCustomPageBlock = (step) => {
+    this.setState((state) => {
+      state.pageBlockCurrent = step;
+    })
+  }
+
   render() {
     const {users, items, admin, setPageName, currentProfilePage, currentAdminPage, itemsLoadingStatus, usersLoadingStatus, filterToogle} = this.props;
     const filterCreatedItems = filterToogle.items ? 'asc' : 'desc';
     const filterCreatedUsers = filterToogle.users ? 'asc' : 'desc';
-    //prev, next
-    //first, last
-    //< prev 1...4 5 6...50 next >
-    const pageItems = [];
-    const {limit, currentItemsPage} = this.state;
-    for (let i = 0; i < Math.ceil(items.length / limit); i++) {
-      pageItems.push(<li key={i} className={currentItemsPage === i * limit ? 'active-page' : ''} onClick={(e) => {
-        this.getItems(`/items?limit=${limit}&skip=${i * limit}:${filterCreatedItems}`);
-        this.onSetCurrentItemsPage(i * limit);
-        }}>{i + 1}</li>);
+    
+    const {limit, currentItemsPage, pageBlockCurrent, pageBlockSize} = this.state;
+    const pageCount = Math.ceil(items.length / limit) - 1;
+    
+    const pageButton = (i, typePage) => {
+      return <li key={i} className={currentItemsPage === i * limit ? 'active-page' : ''} onClick={() => {
+      this.getItems(`/items?limit=${limit}&skip=${i * limit}:${filterCreatedItems}`);
+      this.onSetCurrentItemsPage(i * limit);
+      const availableStep = (pageCount - pageBlockSize) - pageBlockCurrent;
+
+      if (typePage === 'next') {
+        if (pageBlockCurrent < (pageCount - pageBlockSize) && availableStep >= pageBlockSize) {
+          this.onSetNextPageBlock();
+        } else {
+          this.onSetCustomPageBlock(pageBlockCurrent + availableStep);
+        }
+      } 
+      
+      if (typePage === 'prev') {
+        if (pageBlockCurrent - pageBlockSize > 0) {
+          this.onSetPrevPageBlock();
+        } else {
+          this.onSetCustomPageBlock(0);
+        }
+      }
+
+      if (i === 0) {
+        this.onSetCustomPageBlock(0)
+      } else if (i === pageCount) {
+        this.onSetCustomPageBlock(pageCount - pageBlockSize)
+      } 
+      
+      }}>{i + 1}</li>;
     }
+
+    const pageBlock = [];
+
+    for (let i = 0; i < pageBlockSize; i++) {
+      const stepPage = i + pageBlockCurrent;
+      if (i === 0 && pageBlockCurrent) {
+        pageBlock.push(pageButton(stepPage, 'prev'));
+      } else if (i === (pageBlockSize - 1)) {
+        pageBlock.push(pageButton(stepPage, 'next'));
+      } else {
+        pageBlock.push(pageButton(stepPage));
+      }
+    }
+
     const Panel = () => {
       return (
             <div className="column">
@@ -93,7 +150,13 @@ class AdminPanel extends Component {
                   
                 </ul>
                 <div className="pagenations">
-                  <ul>{pageItems}</ul>
+                  <ul>
+                    {pageBlockCurrent ? pageButton(0) : null}
+                    {pageBlockCurrent ? <>...</> : null}
+                    {pageBlock}
+                    {pageBlockCurrent - (pageCount - pageBlockSize) ? <>...</> : null}
+                    {pageButton(pageCount)}
+                  </ul>
                 </div>
                 <button onClick={() => setPageName('ITEMS_CREATE')} className="create">Create item</button>
               </div>
