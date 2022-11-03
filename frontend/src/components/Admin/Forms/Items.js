@@ -1,13 +1,16 @@
-import {Component} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import * as actions from '../../../redux/actions';
 import {Formik, Form, Field, ErrorMessage as FormikErrorMessage} from 'formik';
 import * as Yup from 'yup';
 import Service from '../../../service/service';
+import RichEditorExample from '../../TextEditor/TextEditor';
+
 import './form.scss';
 class ItemsForm extends Component {
   timeoutClearMessage = null;
   timeoutHideModal = null;
+
   onHandleSubmit = (data) => {
     this.props.loginFetching();
     new Service().adminCreateItem('/coffee', data, {"Authorization": `Bearer ${this.props.authToken}`})
@@ -42,6 +45,8 @@ class ItemsForm extends Component {
     const {setPageName} = this.props;
     return (
       <div className="modal">
+        <RichEditorExample />
+
         <div className="wrapper">
           <div className="close" onClick={() => setPageName('PAGE HIDE')}>x</div>
           <h3>Create item</h3>
