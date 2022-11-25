@@ -42,8 +42,7 @@ const categorySchema = new mongoose.Schema({
     }
   },
   mainCategory: {
-    type: mongoose.Schema.Types.ObjectId,
-    require: true
+    type: mongoose.Schema.Types.ObjectId
   },
   subCategories: [{
     type: mongoose.Schema.Types.ObjectId
