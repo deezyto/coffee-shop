@@ -33,7 +33,7 @@ router.post('/create/item', auth, async (req, res) => {
       const checkUri = await Item.findOne({ slug: req.body.slug });
 
       if (checkUri) {
-        return res.status(400).send({ err: `Uri ${req.body.slug} is available. Please choose another unique uri` });
+        return res.status(400).send({ err: `Slug ${req.body.slug} is available. Please choose another unique slug` });
       }
 
       //create new item
@@ -42,6 +42,7 @@ router.post('/create/item', auth, async (req, res) => {
       if (!mainCategory) {
         return res.status(400).send({ err: 'main category not found' });
       }
+
       let currentMainCategory = mainCategory;
 
       while (currentMainCategory.mainCategory) {
@@ -64,6 +65,12 @@ router.post('/create/item', auth, async (req, res) => {
       const item = new Item(objItem);
 
       await item.save();
+
+      await Category.findByIdAndUpdate(
+        mainCategory._id,
+        { $addToSet: { items: item._id } },
+        { new: true, useFindAndModify: false }
+      );
 
       if (req.body.parentCategories) {
         addItemToCategory(req.body.parentCategories, item._id);

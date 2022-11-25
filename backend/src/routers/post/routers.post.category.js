@@ -3,46 +3,53 @@ const router = new express.Router();
 const auth = require('../../middleware/middleware.auth');
 const Category = require('../../models/model.category');
 
-const addSubCategoryToParentCategory = function (parentCategoriesId = [], subCategoryId = '') {
-  parentCategoriesId.forEach(async category => {
-    await Category.findByIdAndUpdate(
-      category,
-      { $addToSet: { subCategories: subCategoryId } },
-      { new: true, useFindAndModify: false }
-    );
-  });
-};
-
-const addParentCategoryToSubCategory = function (parentCategoriesId = [], subCategoryId = '') {
-  parentCategoriesId.forEach(async id => {
-    await Category.findByIdAndUpdate(
-      subCategoryId,
-      { $addToSet: { parentCategories: id } },
-      { new: true, useFindAndModify: false }
-    );
-  });
-};
-
 router.post('/create/category', auth, async (req, res) => {
   try {
     if (req.admin) {
-      const checkUri = await Category.findOne({slug: req.body.slug});
-      
+      const checkUri = await Category.findOne({ slug: req.body.slug });
+
       if (checkUri) {
-        res.status(400).send({err: `Uri ${req.body.slug} is available. Please choose another unique uri`});
+        res.status(400).send({ err: `Slug ${req.body.slug} is available. Please choose another unique slug` });
       }
 
-      const category = new Category(req.body);
-      await category.save();
-      if (req.body.addParentCategories) {
-        addSubCategoryToParentCategory(req.body.addParentCategories, category._id);
-        addParentCategoryToSubCategory(req.body.addParentCategories, category._id);
+      //create new category
+      let categoryUrl = [];
+      const mainCategory = await Category.findById(req.body.mainCategory);
+      if (!mainCategory) {
+        return res.status(400).send({ err: 'main category not found' });
       }
+      let currentMainCategory = mainCategory;
+
+      while (currentMainCategory.mainCategory) {
+        categoryUrl.unshift(currentMainCategory.slug);
+        currentMainCategory = await Category.findById(currentMainCategory.mainCategory);
+      }
+      categoryUrl.unshift('/' + currentMainCategory.slug);
+      categoryUrl.push(req.body.slug);
+
+      const objCategory = {
+        title: req.body.title,
+        slug: req.body.slug,
+        description: req.body.description,
+        html: req.body.html,
+        metaTags: req.body.metaTags,
+        mainCategory: req.body.mainCategory,
+        url: categoryUrl.join('/')
+      }
+      const category = new Category(objCategory);
+      await category.save();
+
+      await Category.findByIdAndUpdate(
+        mainCategory._id,
+        { $addToSet: { subCategories: category._id } },
+        { new: true, useFindAndModify: false }
+      );
+
       res.status(201).send(category);
     }
     res.status(403).send();
-  } catch {
-    res.status(400).send();
+  } catch (e) {
+    res.status(400).send({ err: e });
   }
 });
 
