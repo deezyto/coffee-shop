@@ -20,7 +20,7 @@ router.get('/items', auth, async (req, res) => {
 
       const countItems = await Item.find({});
 
-      res.send({results: items, length: countItems.length});
+      res.send({ results: items, length: countItems.length });
     }
     res.status(403).send();
   } catch {
@@ -40,17 +40,17 @@ router.get('*', categoryMiddleware, async (req, res) => {
 
     if (req.category) {
       const items = await Item.find({
-        '_id': {$in: req.category.items}
+        '_id': { $in: req.category.items }
       }, null, {
         limit: parseInt(req.query.limit),
         skip: parseInt(req.query.skip),
         sort
       });
-      res.send({items, category: req.category});
+      res.send({ items, category: req.category });
     } else if (req.item) {
       res.status(200).send(req.item);
     }
-    
+
   } catch {
     res.status(500).send()
   }

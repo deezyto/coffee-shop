@@ -3,6 +3,7 @@ const router = new express.Router();
 const auth = require('../../middleware/middleware.auth');
 const Item = require('../../models/model.item');
 const Category = require('../../models/model.category');
+const { findById } = require('../../models/model.item');
 
 const addItemToCategory = function (categoryId = [], itemId = '') {
   categoryId.forEach(async category => {
@@ -24,31 +25,56 @@ const addCategoryToItem = function (categoryId = [], itemId = '') {
   });
 };
 
-//create item in category or in subcategory
+//create item in category or subcategory
 router.post('/create/item', auth, async (req, res) => {
   try {
     if (req.admin) {
       //search item on slug
-      const checkUri = await Item.findOne({slug: req.body.slug});
-      
+      const checkUri = await Item.findOne({ slug: req.body.slug });
+
       if (checkUri) {
-        res.status(400).send({err: `Uri ${req.body.slug} is available. Please choose another unique uri`});
+        return res.status(400).send({ err: `Uri ${req.body.slug} is available. Please choose another unique uri` });
       }
 
       //create new item
-      const item = new Item(req.body);
+      let itemUrl = [];
+      const mainCategory = await Category.findById(req.body.mainCategory);
+      if (!mainCategory) {
+        return res.status(400).send({ err: 'main category not found' });
+      }
+      let currentMainCategory = mainCategory;
+
+      while (currentMainCategory.mainCategory) {
+        itemUrl.unshift(currentMainCategory.slug);
+        currentMainCategory = await Category.findById(currentMainCategory.mainCategory);
+      }
+      itemUrl.unshift('/' + currentMainCategory.slug);
+      itemUrl.push(req.body.slug);
+
+      const objItem = {
+        title: req.body.title,
+        slug: req.body.slug,
+        description: req.body.description,
+        html: req.body.html,
+        metaTags: req.body.metaTags,
+        mainCategory: req.body.mainCategory,
+        url: itemUrl.join('/')
+      }
+
+      const item = new Item(objItem);
+
       await item.save();
 
-      if (req.body.addParentCategories) {
-        addItemToCategory(req.body.addParentCategories, item._id);
-        addCategoryToItem(req.body.addParentCategories, item._id);
+      if (req.body.parentCategories) {
+        addItemToCategory(req.body.parentCategories, item._id);
+        addCategoryToItem(req.body.parentCategories, item._id);
       }
-      
+
       res.status(201).send(item);
     }
     res.status(403).send();
-  } catch {
-    res.status(400).send({err: 'Please check required fields'});
+  } catch (e) {
+    res.status(400).send({ err: 'Please check required fields', message: e });
   }
 });
 
