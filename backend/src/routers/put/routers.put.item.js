@@ -8,12 +8,28 @@ router.put('/update/item/:id', auth, async (req, res) => {
   try {
     if (req.admin) {
       const item = await Item.findById(req.params.id);
+      if (!item) {
+        return res.status(404).send({ err: "item not found" });
+      }
+
       const updates = Object.keys(req.body);
-      const allowedFields = ['title', 'description', 'slug', 'images', 'metaTags', 'removeCategories', 'addCategories'];
+      const allowedFields = ['title', 'description', 'slug', 'images', 'html', 'metaTags', 'mainCategory', 'removeCategories', 'addCategories'];
       const isValidUpdates = updates.every(elem => allowedFields.includes(elem));
 
       if (!isValidUpdates) {
-        return res.status(400).send({err: 'This updates not allowed'});
+        return res.status(400).send({ err: 'This updates not allowed' });
+      }
+
+      const mainCategory = await Category.findById(req.body.mainCategory);
+      if (!mainCategory && req.body.mainCategory) {
+        return res.status(400).send({ err: 'category not found' });
+      }
+
+      if (req.body.slug) {
+        const checkSlug = await Item.findOne({ slug: req.body.slug });
+        if (checkSlug && item.slug !== checkSlug.slug) {
+          return res.status(400).send({ err: `Slug ${req.body.slug} is available. Please choise another.` })
+        }
       }
 
       const removeCategoriesFromItem = async () => {
@@ -33,7 +49,7 @@ router.put('/update/item/:id', auth, async (req, res) => {
           );
         });
       };
-      
+
       const addCategoriesToItem = async () => {
         await Item.findByIdAndUpdate(
           req.params.id,
@@ -52,29 +68,66 @@ router.put('/update/item/:id', auth, async (req, res) => {
         });
       }
 
+      const removeItemFromMainCategory = async () => {
+        await Category.findByIdAndUpdate(
+          item.mainCategory,
+          { $pull: { items: item._id } },
+          { new: true, useFindAndModify: false }
+        );
+      }
+
+      const addItemToMainCategory = async () => {
+        await Category.findByIdAndUpdate(
+          mainCategory._id,
+          { $addToSet: { items: item._id } },
+          { new: true, useFindAndModify: false }
+        );
+      }
+
       if (req.body.removeCategories) {
         await removeCategoriesFromItem();
         await removeItemFromCategories();
-      } 
-      
+      }
+
       if (req.body.addCategories) {
         await addCategoriesToItem();
         await addItemToCategories();
       }
 
+      if (req.body.mainCategory) {
+        await removeItemFromMainCategory();
+        await addItemToMainCategory();
+        let itemUrl = [];
+
+        let currentMainCategory = mainCategory;
+
+        while (currentMainCategory.mainCategory) {
+          itemUrl.unshift(currentMainCategory.slug);
+          currentMainCategory = await Category.findById(currentMainCategory.mainCategory);
+        }
+
+        itemUrl.unshift('/' + currentMainCategory.slug);
+        itemUrl.push(req.body.slug ? req.body.slug : item.slug);
+        item.url = itemUrl.join('/');
+      }
+
+      if (req.body.slug) {
+        const changeUrl = item.url.split('/');
+        changeUrl[changeUrl.length - 1] = req.body.slug;
+        item.url = changeUrl.join('/');
+      }
+
       delete req.body.removeCategories;
       delete req.body.addCategories;
-
       updates.forEach(field => {
         item[field] = req.body[field];
       })
-      
+
       await item.save();
       res.send(item);
-      
-      }
+    }
   } catch (e) {
-    res.status(500).send({err: e});
+    res.status(500).send({ err: e });
   }
 });
 

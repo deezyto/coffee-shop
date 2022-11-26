@@ -36,6 +36,7 @@ router.post('/create/item', auth, async (req, res) => {
         return res.status(400).send({ err: `Slug ${req.body.slug} is available. Please choose another unique slug` });
       }
 
+
       //create new item
       let itemUrl = [];
       const mainCategory = await Category.findById(req.body.mainCategory);
@@ -49,6 +50,7 @@ router.post('/create/item', auth, async (req, res) => {
         itemUrl.unshift(currentMainCategory.slug);
         currentMainCategory = await Category.findById(currentMainCategory.mainCategory);
       }
+
       itemUrl.unshift('/' + currentMainCategory.slug);
       itemUrl.push(req.body.slug);
 
