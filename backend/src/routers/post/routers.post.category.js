@@ -49,7 +49,7 @@ router.post('/create/category', auth, async (req, res) => {
         { new: true, useFindAndModify: false }
       );
 
-      res.status(201).send(category);
+      return res.status(201).send(category);
     } else {
       objCategory.url = '/' + req.body.slug;
       const category = new Category(objCategory);

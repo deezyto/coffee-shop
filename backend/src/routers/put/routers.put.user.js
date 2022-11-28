@@ -16,9 +16,9 @@ router.put('/users/me', auth, async (req, res) => {
       req.user[item] = req.body[item];
     })
     await req.user.save();
-    res.send(req.user);
+    return res.send(req.user);
   } catch {
-    res.status(500).send();
+    return res.status(500).send();
   }
 });
 

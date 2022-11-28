@@ -7,24 +7,25 @@ const categoryMiddleware = require('../../middleware/middleware.category');
 router.get('/items', auth, async (req, res) => {
   try {
     if (req.admin) {
-      const sort = {};
-      if (req.query.sortBy) {
-        const parts = req.query.sortBy.split(':');
-        sort[parts[0]] = parts[1] === 'asc' ? 1 : -1;
-      }
-      const items = await Item.find({}, null, {
-        limit: parseInt(req.query.limit),
-        skip: parseInt(req.query.skip),
-        sort
-      });
-
-      const countItems = await Item.find({});
-
-      res.send({ results: items, length: countItems.length });
+      return res.status(403).send();
     }
-    res.status(403).send();
+
+    const sort = {};
+    if (req.query.sortBy) {
+      const parts = req.query.sortBy.split(':');
+      sort[parts[0]] = parts[1] === 'asc' ? 1 : -1;
+    }
+    const items = await Item.find({}, null, {
+      limit: parseInt(req.query.limit),
+      skip: parseInt(req.query.skip),
+      sort
+    });
+
+    const countItems = await Item.find({});
+
+    return res.send({ results: items, length: countItems.length });
   } catch {
-    res.status(500).send();
+    return res.status(500).send();
   }
 });
 
@@ -46,13 +47,12 @@ router.get('*', categoryMiddleware, async (req, res) => {
         skip: parseInt(req.query.skip),
         sort
       });
-      res.send({ items, category: req.category });
+      return res.send({ items, category: req.category });
     } else if (req.item) {
-      res.status(200).send(req.item);
+      return res.status(200).send(req.item);
     }
-
   } catch {
-    res.status(500).send()
+    return res.status(500).send()
   }
 })
 
