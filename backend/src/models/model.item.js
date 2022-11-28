@@ -11,15 +11,15 @@ const itemSchema = new mongoose.Schema({
   description: {
     type: String,
     trim: true,
-    minLength: [5, 'Min length for title must be a 5 characters'],
-    maxLength: [100000, 'Max length for title must be a 100000 characters'],
+    minLength: [5, 'Min length for description must be a 5 characters'],
+    maxLength: [500, 'Max length for description must be a 500 characters'],
   },
   slug: {
     type: String,
     trim: true,
     unique: true,
-    minLength: [5, 'Min length for title must be a 5 characters'],
-    maxLength: [100, 'Max length for title must be a 100000 characters'],
+    minLength: [5, 'Min length for slug must be a 5 characters'],
+    maxLength: [100, 'Max length for slug must be a 100 characters'],
     required: true
   },
   url: {
@@ -27,11 +27,13 @@ const itemSchema = new mongoose.Schema({
     trim: true,
     require: true,
     uniq: true,
-    minLength: [5, 'Min length for url must be a 5 characters']
+    minLength: [5, 'Min length for url must be a 5 characters'],
+    maxLength: [100, 'Max length for url must be a 100 characters'],
   },
   mainCategory: {
     type: mongoose.Schema.Types.ObjectId,
-    require: true
+    require: true,
+    ref: 'Category'
   },
   metaTags: {
     title: {
@@ -50,7 +52,8 @@ const itemSchema = new mongoose.Schema({
     ref: 'Category'
   }],
   html: {
-    type: String
+    type: String,
+    maxLength: [10000, 'Max length for html must be a 10000 characters']
   }
 }, {
   timestamps: true

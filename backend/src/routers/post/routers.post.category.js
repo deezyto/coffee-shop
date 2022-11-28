@@ -6,9 +6,9 @@ const Category = require('../../models/model.category');
 router.post('/create/category', auth, async (req, res) => {
   try {
     if (req.admin) {
-      const checkUri = await Category.findOne({ slug: req.body.slug });
+      const checkSlug = await Category.findOne({ slug: req.body.slug });
 
-      if (checkUri) {
+      if (checkSlug) {
         res.status(400).send({ err: `Slug ${req.body.slug} is available. Please choose another unique slug` });
       }
 

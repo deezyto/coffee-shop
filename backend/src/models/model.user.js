@@ -7,20 +7,25 @@ const userModel = {
   name: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    minLength: [1, 'Min length for name must be a 1 character'],
+    maxLength: [100, 'Max length for name must be a 100 characters']
   },
   lastname: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    minLength: [1, 'Min length for lastname must be a 1 character'],
+    maxLength: [100, 'Max length for lastname must be a 100 characters']
   },
   surname: {
     type: String,
     trim: true,
+    maxLength: [100, 'Max length for surname must be a 100 characters']
   },
   dateBirth: {
     type: Date,
-    trim: true,
+    trim: true
   },
   email: {
     type: String,
@@ -28,6 +33,7 @@ const userModel = {
     trim: true,
     required: true,
     lowercase: true,
+    maxLength: [100, 'Max length for email must be a 100 characters'],
     validate(value) {
       if (!validator.isEmail(value)) {
         throw new Error('Email dont valid');
@@ -64,7 +70,7 @@ const userModel = {
   gender: {
     type: String,
     trim: true,
-    minLength: [3, 'Min length for Your gender must be a 3 characters']
+    maxLength: [50, 'Max length for Your gender must be a 50 characters'],
   },
   address: {
     type: String,
@@ -74,6 +80,7 @@ const userModel = {
   phone: {
     type: String,
     trim: true,
+    maxLength: [20, 'Max length for Your phone must be a 20 integers'],
     validate(value) {
       if (!validator.isMobilePhone(value)) {
         throw new Error('Your phone number is a not valide format');
@@ -83,6 +90,7 @@ const userModel = {
   postalCode: {
     type: String,
     trim: true,
+    maxLength: [50, 'Max length for Your postal code must be a 50 characters'],
     validate(value) {
       if (!validator.isPostalCode(value)) {
         throw new Error('Your postal code dont correct format');
@@ -93,30 +101,31 @@ const userModel = {
 
 const userTokens = {
   tokens: [
-  {
-    token: {
-      type: String,
-      required: true
+    {
+      token: {
+        type: String,
+        required: true
+      }
     }
-  }
-]};
+  ]
+};
 
 const userOptions = {
   timestamps: true
 };
 
-const userSchema = new mongoose.Schema({...userModel, ...userTokens}, userOptions);
+const userSchema = new mongoose.Schema({ ...userModel, ...userTokens }, userOptions);
 
-userSchema.methods.generateAuthToken = async function() {
-  const token = jwt.sign({_id: this._id.toString()}, 'mNuV9FH5Wd2xPcSzuirWpZGiPrExbUq');
-  this.tokens = this.tokens.concat({token});
+userSchema.methods.generateAuthToken = async function () {
+  const token = jwt.sign({ _id: this._id.toString() }, 'mNuV9FH5Wd2xPcSzuirWpZGiPrExbUq');
+  this.tokens = this.tokens.concat({ token });
   await this.save();
   return token;
 }
 
-userSchema.statics.findByCredentials = async function(email, password) {
-  const user = await User.findOne({email});
-  
+userSchema.statics.findByCredentials = async function (email, password) {
+  const user = await User.findOne({ email });
+
   if (!user) {
     throw new Error('Enable to login');
   }
@@ -130,7 +139,7 @@ userSchema.statics.findByCredentials = async function(email, password) {
   return user;
 }
 
-userSchema.methods.toJSON = function() {
+userSchema.methods.toJSON = function () {
   const userObject = this.toObject();
 
   for (let item in userObject) {
@@ -141,14 +150,13 @@ userSchema.methods.toJSON = function() {
   return userObject;
 }
 
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   if (this.isModified('password')) {
     this.password = await bcrypt.hash(this.password, 8)
   }
-  console.log(this, 'save')
   next();
 });
 
 const User = mongoose.model('User', userSchema);
 
-module.exports = {User, userModel, userOptions, userTokens};
+module.exports = { User, userModel, userOptions, userTokens };

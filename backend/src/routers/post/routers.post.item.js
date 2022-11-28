@@ -3,10 +3,9 @@ const router = new express.Router();
 const auth = require('../../middleware/middleware.auth');
 const Item = require('../../models/model.item');
 const Category = require('../../models/model.category');
-const { findById } = require('../../models/model.item');
 
-const addItemToCategory = function (categoryId = [], itemId = '') {
-  categoryId.forEach(async category => {
+const addItemToCategory = function (categoryesIds = [], itemId = '') {
+  categoryesIds.forEach(async category => {
     await Category.findByIdAndUpdate(
       category,
       { $addToSet: { items: itemId } },
@@ -15,14 +14,12 @@ const addItemToCategory = function (categoryId = [], itemId = '') {
   });
 };
 
-const addCategoryToItem = function (categoryId = [], itemId = '') {
-  categoryId.forEach(async id => {
-    await Item.findByIdAndUpdate(
-      itemId,
-      { $addToSet: { parentCategories: id } },
-      { new: true, useFindAndModify: false }
-    );
-  });
+const addCategoryToItem = async function (categoryesIds = [], itemId = '') {
+  await Item.findByIdAndUpdate(
+    itemId,
+    { $addToSet: { parentCategories: categoryesIds } },
+    { new: true, useFindAndModify: false }
+  );
 };
 
 //create item in category or subcategory
@@ -30,20 +27,36 @@ router.post('/create/item', auth, async (req, res) => {
   try {
     if (req.admin) {
       //search item on slug
-      const checkUri = await Item.findOne({ slug: req.body.slug });
+      const checkSlug = await Item.findOne({ slug: req.body.slug });
 
-      if (checkUri) {
+      if (checkSlug) {
         return res.status(400).send({ err: `Slug ${req.body.slug} is available. Please choose another unique slug` });
       }
 
-
-      //create new item
-      let itemUrl = [];
       const mainCategory = await Category.findById(req.body.mainCategory);
       if (!mainCategory) {
         return res.status(400).send({ err: 'main category not found' });
       }
 
+      if (req.body.parentCategories) {
+        if (!Array.isArray(req.body.parentCategories)) {
+          return res.status(400).send({ err: 'Parent category must be a array type' });
+        }
+        for await (let id of req.body.parentCategories) {
+          const category = await Category.findById(id);
+          if (!category) {
+            return res.status(400).send({ err: `Parent category ${id} not fount` });
+          }
+        }
+        req.body.parentCategories.push(mainCategory._id);
+      }
+
+      if (!req.body.parentCategories) {
+        req.body.parentCategories = [mainCategory._id];
+      }
+
+      //create new item
+      let itemUrl = [];
       let currentMainCategory = mainCategory;
 
       while (currentMainCategory.mainCategory) {
@@ -70,14 +83,12 @@ router.post('/create/item', auth, async (req, res) => {
 
       await Category.findByIdAndUpdate(
         mainCategory._id,
-        { $addToSet: { items: item._id } },
+        { $addToSet: { mainItems: item._id } },
         { new: true, useFindAndModify: false }
       );
 
-      if (req.body.parentCategories) {
-        addItemToCategory(req.body.parentCategories, item._id);
-        addCategoryToItem(req.body.parentCategories, item._id);
-      }
+      addItemToCategory(req.body.parentCategories, item._id);
+      addCategoryToItem(req.body.parentCategories, item._id);
 
       res.status(201).send(item);
     }
