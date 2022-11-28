@@ -86,7 +86,7 @@ router.post('/create/item', auth, async (req, res) => {
 
     await Category.findByIdAndUpdate(
       mainCategory._id,
-      { $addToSet: { mainItems: item._id } },
+      { $addToSet: { mainItems: item._id, items: item._id } },
       { new: true, useFindAndModify: false }
     );
 

@@ -15,8 +15,8 @@ router.put('/update/item/:id', auth, async (req, res) => {
     }
 
     const updates = Object.keys(req.body);
-    const allowedFields = ['title', 'description', 'slug', 'images', 'html', 'metaTags', 'mainCategory', 'removeCategories', 'addCategories'];
-    const isValidUpdates = updates.every(elem => allowedFields.includes(elem));
+    const allowedFields = ['title', 'description', 'slug', 'html', 'metaTags', 'mainCategory', 'removeCategories', 'addCategories'];
+    const isValidUpdates = updates.every(field => allowedFields.includes(field));
 
     if (!isValidUpdates) {
       return res.status(400).send({ err: 'This updates not allowed' });
@@ -32,6 +32,23 @@ router.put('/update/item/:id', auth, async (req, res) => {
       if (checkSlug && item.slug !== checkSlug.slug) {
         return res.status(400).send({ err: `Slug ${req.body.slug} is available. Please choise another.` })
       }
+    }
+
+    if (req.body.addCategories) {
+      if (!Array.isArray(req.body.addCategories)) {
+        return res.status(400).send({ err: 'Parent category must be a array type' });
+      }
+      for await (let id of req.body.addCategories) {
+        const category = await Category.findById(id);
+        if (!category) {
+          return res.status(400).send({ err: `Parent category ${id} not fount` });
+        }
+      }
+      req.body.addCategories.push(mainCategory._id);
+    }
+
+    if (!req.body.addCategories) {
+      req.body.addCategories = [mainCategory._id];
     }
 
     const removeCategoriesFromItem = async () => {
@@ -87,6 +104,9 @@ router.put('/update/item/:id', auth, async (req, res) => {
     }
 
     if (req.body.removeCategories) {
+      req.body.removeCategories = req.body.removeCategories.filter((id) => {
+        return id !== req.body.mainCategory ? req.body.mainCategory : item.mainCategory.toString();
+      });
       await removeCategoriesFromItem();
       await removeItemFromCategories();
     }
