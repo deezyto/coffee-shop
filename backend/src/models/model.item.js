@@ -18,6 +18,7 @@ const itemSchema = new mongoose.Schema({
     type: String,
     trim: true,
     unique: true,
+    lowercase: true,
     minLength: [5, 'Min length for slug must be a 5 characters'],
     maxLength: [100, 'Max length for slug must be a 100 characters'],
     required: true
@@ -27,6 +28,7 @@ const itemSchema = new mongoose.Schema({
     trim: true,
     require: true,
     uniq: true,
+    lowercase: true,
     minLength: [5, 'Min length for url must be a 5 characters'],
     maxLength: [100, 'Max length for url must be a 100 characters'],
   },

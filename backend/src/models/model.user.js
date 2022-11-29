@@ -57,20 +57,11 @@ const userModel = {
     trim: true,
     required: true,
     default: "customer"
-    /* minLength: [4, 'Min length for user role must be a 4 characters'],
-    maxLength: [20, 'Max length for user role must be a 20 characters'],
-    validate(value) {
-      const arr = ['customer', 'manager', 'support'];
-      const result = [value].every(item => arr.includes(item));
-      if (!result) {
-        throw new Error('This role in not allowed');
-      }
-    } */
   },
   gender: {
     type: String,
     trim: true,
-    maxLength: [50, 'Max length for Your gender must be a 50 characters'],
+    enum: ["male", "female", "other", "unknown"]
   },
   address: {
     type: String,

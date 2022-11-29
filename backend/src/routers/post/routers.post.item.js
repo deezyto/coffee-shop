@@ -3,6 +3,7 @@ const router = new express.Router();
 const auth = require('../../middleware/middleware.auth');
 const Item = require('../../models/model.item');
 const Category = require('../../models/model.category');
+const { createUrl } = require('../../utils/url');
 
 const addItemToCategory = function (categoryesIds = [], itemId = '') {
   categoryesIds.forEach(async category => {
@@ -59,15 +60,7 @@ router.post('/create/item', auth, async (req, res) => {
     }
 
     //create new item
-    let itemUrl = [];
-    let currentMainCategory = mainCategory;
-
-    while (currentMainCategory.mainCategory) {
-      itemUrl.unshift(currentMainCategory.slug);
-      currentMainCategory = await Category.findById(currentMainCategory.mainCategory);
-    }
-
-    itemUrl.unshift('/' + currentMainCategory.slug);
+    const itemUrl = await createUrl(mainCategory);
     itemUrl.push(req.body.slug);
 
     const objItem = {

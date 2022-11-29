@@ -19,7 +19,8 @@ const categorySchema = new mongoose.Schema({
     trim: true,
     require: true,
     unique: true,
-    minLength: [5, 'Min length for slug must be a 5 characters'],
+    lowercase: true,
+    minLength: [1, 'Min length for slug must be a 1 characters'],
     maxLength: [100, 'Max length for slug must be a 100 characters']
   },
   url: {
@@ -27,6 +28,7 @@ const categorySchema = new mongoose.Schema({
     trim: true,
     require: true,
     uniq: true,
+    lowercase: true,
     minLength: [5, 'Min length for url must be a 5 characters'],
     maxLength: [100, 'Max length for url must be a 100 characters']
   },

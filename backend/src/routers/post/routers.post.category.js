@@ -2,6 +2,7 @@ const express = require('express');
 const router = new express.Router();
 const auth = require('../../middleware/middleware.auth');
 const Category = require('../../models/model.category');
+const { createUrl } = require('../../utils/url');
 
 router.post('/create/category', auth, async (req, res) => {
   try {
@@ -25,21 +26,14 @@ router.post('/create/category', auth, async (req, res) => {
       mainCategory: req.body.mainCategory
     }
     if (req.body.mainCategory) {
-      let categoryUrl = [];
       const mainCategory = await Category.findById(req.body.mainCategory);
       if (!mainCategory) {
         return res.status(400).send({ err: 'main category not found' });
       }
-      let currentMainCategory = mainCategory;
-
-      while (currentMainCategory.mainCategory) {
-        categoryUrl.unshift(currentMainCategory.slug);
-        currentMainCategory = await Category.findById(currentMainCategory.mainCategory);
-      }
-      categoryUrl.unshift('/' + currentMainCategory.slug);
+      const categoryUrl = await createUrl(mainCategory);
       categoryUrl.push(req.body.slug);
-
       objCategory.url = categoryUrl.join('/');
+
       const category = new Category(objCategory);
       await category.save();
 
