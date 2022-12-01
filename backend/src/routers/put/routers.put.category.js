@@ -50,7 +50,13 @@ router.put('/update/category/:id', auth, async (req, res) => {
       }
     }
 
-    //1) remove subCategories from current category
+    //щоб видалити субкатегорію потрібно
+    //з теперішньої категорії видалити зі списка субкатегорій субкатегорію для видалення
+    //із субкатегорії для видалення із поля головна категорія видалити теперішню категорію
+    //із items для яких субкатегорія була головною потрібно перезаписати url
+    //для субкатегорію потрібно перезаписати url
+
+    //з теперішньої категорії видалити зі списка субкатегорій субкатегорію для видалення
     const removeSubCategoriesFromMainCategory = async () => {
       await Category.findByIdAndUpdate(
         req.params.id,
@@ -58,44 +64,36 @@ router.put('/update/category/:id', auth, async (req, res) => {
         { new: true, useFindAndModify: false }
       );
     }
-
-    //2) remove current category from field mainCategory in subCategories
+    //із субкатегорії для видалення із поля головна категорія видалити теперішню категорію
     const removeMainCategoryFromSubCategories = async () => {
-      req.body.removeSubCategories.forEach(async categoryId => {
+      for await (let categoryId of req.body.removeSubCategories) {
         const subCategory = await Category.findById(categoryId);
         await Category.findByIdAndUpdate(
           categoryId,
           {
             $set: {
-              mainCategory: undefined,
-              //3) change url in subCategories (delete slug current category (mainCategory))
-              url: subCategory.url.split('/').filter(slug => slug !== category.slug).join('/')
+              mainCategory: null,
+              url: '/' + subCategory.slug
             }
           },
           { new: true, useFindAndModify: false }
         );
-      });
+      }
     };
-    console.log(req.body.subCategories)
+
     //4) change url in items if subCategory = mainCategory in item
-    const removeSlugSubCategoryFromItems = async () => {
-      req.body.removeSubCategories.forEach(async categoryId => {
-        const mainItems = await Category.findById(categoryId).mainItems;
-        mainItems.forEach(async itemId => {
+    const removeSlugMainCategoryFromItems = async () => {
+      await req.body.removeSubCategories.forEach(async categoryId => {
+        const subCategory = await Category.findById(categoryId);
+        await subCategory.mainItems.forEach(async itemId => {
           const item = await Item.findById(itemId);
-          const itemUrl = item.url;
-          itemUrl = itemUrl.split('/');
-          itemUrl.pop();
-          itemUrl.pop();
+          const itemUrl = await createUrl(subCategory);
           itemUrl.push(item.slug);
-          itemUrl = itemUrl.join('/');
           await Item.findByIdAndUpdate(
             itemId,
             {
               $set: {
-                mainCategory: req.body.mainCategory ? req.body.mainCategory : undefined,
-                //3) change url in subCategories (delete slug previous mainCategory)
-                url: itemUrl
+                url: itemUrl.join('/')
               }
             },
             { new: true, useFindAndModify: false }
@@ -121,6 +119,15 @@ router.put('/update/category/:id', auth, async (req, res) => {
     //2) add current category to mainCategory field in subCategories
     const addMainCategoryToSubCategories = async () => {
       req.body.addSubCategories.forEach(async categoryId => {
+        await Category.findByIdAndUpdate(
+          categoryId,
+          {
+            $set: {
+              mainCategory: req.params.id
+            }
+          },
+          { new: true, useFindAndModify: false }
+        );
         const subCategory = await Category.findById(categoryId);
         const categoryUrl = await createUrl(category);
         categoryUrl.push(subCategory.slug);
@@ -128,8 +135,6 @@ router.put('/update/category/:id', auth, async (req, res) => {
           categoryId,
           {
             $set: {
-              mainCategory: req.params.id,
-              //change url in subCategories (add slug new mainCategory)
               url: categoryUrl.join('/')
             }
           },
@@ -138,6 +143,25 @@ router.put('/update/category/:id', auth, async (req, res) => {
       });
     }
 
+    const changeUrlInMainItemsForAddSubCategories = async () => {
+      req.body.addSubCategories.forEach(async categoryId => {
+        const subCategory = await Category.findById(categoryId);
+        await subCategory.mainItems.forEach(async itemId => {
+          const item = await Item.findById(itemId);
+          const itemUrl = await createUrl(subCategory);
+          itemUrl.push(item.slug);
+          await Item.findByIdAndUpdate(
+            itemId,
+            {
+              $set: {
+                url: itemUrl.join('/')
+              }
+            },
+            { new: true, useFindAndModify: false }
+          );
+        });
+      });
+    }
 
     const removeCurrentCategoryFromPreviosMainCategory = async () => {
       await Category.findByIdAndUpdate(
@@ -155,8 +179,8 @@ router.put('/update/category/:id', auth, async (req, res) => {
       );
     }
 
-    const changeUrlInMainItemsCurrentCategory = () => {
-      category.mainItems.forEach(async itemId => {
+    const changeUrlInMainItemsCurrentCategory = async () => {
+      for await (let itemId of category.mainItems) {
         const itemUrl = await createUrl(category);
         const item = await Item.findById(itemId);
         itemUrl.push(item.slug);
@@ -169,18 +193,19 @@ router.put('/update/category/:id', auth, async (req, res) => {
           },
           { new: true, useFindAndModify: false }
         );
-      });
+      }
     }
 
     if (req.body.removeSubCategories) {
-      //await removeSubCategoriesFromMainCategory();
-      //await removeMainCategoryFromSubCategories();
-      //await removeSlugSubCategoryFromItems();
+      await removeSubCategoriesFromMainCategory();
+      await removeMainCategoryFromSubCategories();
+      await removeSlugMainCategoryFromItems();
     }
 
     if (req.body.addSubCategories) {
       await addSubCategoriesToMainCategory();
       await addMainCategoryToSubCategories();
+      await changeUrlInMainItemsForAddSubCategories();
     }
 
     if (req.body.mainCategory) {
