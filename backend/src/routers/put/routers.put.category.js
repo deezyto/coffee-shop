@@ -83,9 +83,9 @@ router.put('/update/category/:id', auth, async (req, res) => {
 
     //4) change url in items if subCategory = mainCategory in item
     const removeSlugMainCategoryFromItems = async () => {
-      await req.body.removeSubCategories.forEach(async categoryId => {
+      for await (let categoryId of req.body.removeSubCategories) {
         const subCategory = await Category.findById(categoryId);
-        await subCategory.mainItems.forEach(async itemId => {
+        for await (let itemId of subCategory.mainItems) {
           const item = await Item.findById(itemId);
           const itemUrl = await createUrl(subCategory);
           itemUrl.push(item.slug);
@@ -98,8 +98,8 @@ router.put('/update/category/:id', auth, async (req, res) => {
             },
             { new: true, useFindAndModify: false }
           );
-        });
-      });
+        }
+      }
     };
 
     //1) add subCategories to current category
@@ -118,7 +118,7 @@ router.put('/update/category/:id', auth, async (req, res) => {
 
     //2) add current category to mainCategory field in subCategories
     const addMainCategoryToSubCategories = async () => {
-      req.body.addSubCategories.forEach(async categoryId => {
+      for await (let categoryId of req.body.addSubCategories) {
         await Category.findByIdAndUpdate(
           categoryId,
           {
@@ -140,13 +140,13 @@ router.put('/update/category/:id', auth, async (req, res) => {
           },
           { new: true, useFindAndModify: false }
         );
-      });
+      }
     }
 
     const changeUrlInMainItemsForAddSubCategories = async () => {
-      req.body.addSubCategories.forEach(async categoryId => {
+      for await (let categoryId of req.body.addSubCategories) {
         const subCategory = await Category.findById(categoryId);
-        await subCategory.mainItems.forEach(async itemId => {
+        for await (let itemId of subCategory.mainItems) {
           const item = await Item.findById(itemId);
           const itemUrl = await createUrl(subCategory);
           itemUrl.push(item.slug);
@@ -159,8 +159,8 @@ router.put('/update/category/:id', auth, async (req, res) => {
             },
             { new: true, useFindAndModify: false }
           );
-        });
-      });
+        }
+      }
     }
 
     const removeCurrentCategoryFromPreviosMainCategory = async () => {
