@@ -196,6 +196,37 @@ router.put('/update/category/:id', auth, async (req, res) => {
       }
     }
 
+    const changeUrlInMainItemsInSubCategoriesFromCurrentCategory = async () => {
+      for await (let categoryId of category.subCategories) {
+        const subCategory = await Category.findById(categoryId);
+        const categoryUrl = await createUrl(category);
+        categoryUrl.push(subCategory.slug);
+        await Category.findByIdAndUpdate(
+          categoryId,
+          {
+            $set: {
+              url: categoryUrl.join('/')
+            }
+          },
+          { new: true, useFindAndModify: false }
+        );
+        for await (let itemId of subCategory.mainItems) {
+          const itemUrl = await createUrl(subCategory);
+          const item = await Item.findById(itemId);
+          itemUrl.push(item.slug);
+          await Item.findByIdAndUpdate(
+            itemId,
+            {
+              $set: {
+                url: itemUrl.join('/')
+              }
+            },
+            { new: true, useFindAndModify: false }
+          );
+        }
+      }
+    }
+
     if (req.body.removeSubCategories) {
       await removeSubCategoriesFromMainCategory();
       await removeMainCategoryFromSubCategories();
@@ -218,7 +249,10 @@ router.put('/update/category/:id', auth, async (req, res) => {
       await addCurrentCategoryToMainCategory();
       //також в url items які належили до теперішньої категорії
       //потрібно замінити slug попередньої головної категорії на нові
-      changeUrlInMainItemsCurrentCategory();
+      await changeUrlInMainItemsCurrentCategory();
+      //також в url items які належили до субкатегорій теперішньої категорії
+      //потрібно замінити slug попередньої головної категорії в теперішній
+      await changeUrlInMainItemsInSubCategoriesFromCurrentCategory();
       //також потрібно змінити url теперішньої категорії замінивши slug попередньої
       //головної категорії на slug нової головної категорії
       const categoryUrl = await createUrl(mainCategory);
