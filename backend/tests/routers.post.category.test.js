@@ -2,14 +2,11 @@ const request = require('supertest');
 const app = require('../src/app');
 const { User } = require('../src/models/model.user');
 const Category = require('../src/models/model.category');
-const { setupDataBase } = require('./fixtures/db');
-
-beforeAll(setupDataBase);
 
 test('Should admin create parent category', async () => {
   const obj = {
-    title: 'Computers',
-    slug: 'computers'
+    title: 'Laptop',
+    slug: 'laptop'
   };
   const admin = await User.findOne({ role: 'admin' });
   const response = await request(app)
@@ -17,14 +14,14 @@ test('Should admin create parent category', async () => {
     .set('Authorization', `Bearer ${admin.tokens[0].token}`)
     .send(obj)
     .expect(201);
-  expect(response.body.url).toEqual('/computers');
+  expect(response.body.url).toEqual('/laptop');
 });
 
 test('Should admin create sub category', async () => {
-  const mainCategory = await Category.findOne({ slug: 'computers' });
+  const mainCategory = await Category.findOne({ slug: 'laptop' });
   const obj = {
-    title: 'Notebooks',
-    slug: 'notebooks',
+    title: 'HP',
+    slug: 'hp-laptop',
     mainCategory: mainCategory._id
   };
   const admin = await User.findOne({ role: 'admin' });
@@ -33,21 +30,19 @@ test('Should admin create sub category', async () => {
     .set('Authorization', `Bearer ${admin.tokens[0].token}`)
     .send(obj)
     .expect(201);
-  expect(response.body.url).toEqual('/computers/notebooks');
+  expect(response.body.url).toEqual('/laptop/hp-laptop');
 });
 
-test('Should admin create sub category', async () => {
-  const mainCategory = await Category.findOne({ slug: 'notebooks' });
+test('Should if user not admin category dont created', async () => {
   const obj = {
-    title: 'Notebooks for learning',
-    slug: 'for-learning',
-    mainCategory: mainCategory._id
+    title: 'HP',
+    slug: 'hp-laptop'
   };
-  const admin = await User.findOne({ role: 'admin' });
+  const user = await User.findOne({ role: 'customer' });
   const response = await request(app)
     .post('/create/category')
-    .set('Authorization', `Bearer ${admin.tokens[0].token}`)
+    .set('Authorization', `Bearer ${user.tokens[0].token}`)
     .send(obj)
-    .expect(201);
-  expect(response.body.url).toEqual('/computers/notebooks/for-learning');
+    .expect(403);
+  expect(response.body.url).toEqual(undefined);
 });

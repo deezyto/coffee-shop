@@ -34,7 +34,7 @@ router.put('/update/category/:id', auth, async (req, res) => {
       }
       for await (let id of req.body.addSubCategories) {
         const subCategory = await Category.findById(id);
-        if (id === category._id.toString() || id === category.mainCategory.toString() || id === req.body.mainCategory) {
+        if (id === category._id.toString() || category.mainCategory && id === category.mainCategory.toString() || id === req.body.mainCategory) {
           return res.status(400).send({ err: 'Sub category not must be a main Category or current category' });
         }
         if (!subCategory) {
@@ -114,6 +114,17 @@ router.put('/update/category/:id', auth, async (req, res) => {
         { $addToSet: { subCategories: req.body.addSubCategories } },
         { new: true, useFindAndModify: false }
       );
+    }
+
+    const removeSubCategoryFromPrevMainCategory = async () => {
+      for await (let category of req.body.addSubCategories) {
+        const subCategory = await Category.findById(category);
+        await Category.findByIdAndUpdate(
+          subCategory.mainCategory,
+          { $pull: { subCategories: subCategory._id } },
+          { new: true, useFindAndModify: false }
+        );
+      }
     }
 
     //2) add current category to mainCategory field in subCategories
@@ -234,6 +245,7 @@ router.put('/update/category/:id', auth, async (req, res) => {
     }
 
     if (req.body.addSubCategories) {
+      await removeSubCategoryFromPrevMainCategory();
       await addSubCategoriesToMainCategory();
       await addMainCategoryToSubCategories();
       await changeUrlInMainItemsForAddSubCategories();
