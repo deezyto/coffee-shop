@@ -14,6 +14,7 @@ router.put('/update/item/:id', auth, async (req, res) => {
     if (!item) {
       return res.status(404).send({ err: "item not found" });
     }
+    console.log(req.body.removeCategories, item.parentCategories)
 
     const updates = Object.keys(req.body);
     const allowedFields = ['title', 'description', 'slug', 'html', 'metaTags', 'mainCategory', 'removeCategories', 'addCategories'];
@@ -45,10 +46,12 @@ router.put('/update/item/:id', auth, async (req, res) => {
           return res.status(400).send({ err: `Parent category ${id} not fount` });
         }
       }
-      req.body.addCategories.push(mainCategory._id);
+      if (mainCategory) {
+        req.body.addCategories.push(mainCategory._id);
+      }
     }
 
-    if (!req.body.addCategories) {
+    if (!req.body.addCategories && mainCategory) {
       req.body.addCategories = [mainCategory._id];
     }
 
@@ -61,13 +64,13 @@ router.put('/update/item/:id', auth, async (req, res) => {
     }
 
     const removeItemFromCategories = async () => {
-      req.body.removeCategories.forEach(async categoryId => {
+      for await (let id of req.body.removeCategories) {
         await Category.findByIdAndUpdate(
-          categoryId,
+          id,
           { $pull: { items: req.params.id } },
           { new: true, useFindAndModify: false }
         );
-      });
+      }
     };
 
     const addCategoriesToItem = async () => {
@@ -79,13 +82,13 @@ router.put('/update/item/:id', auth, async (req, res) => {
     }
 
     const addItemToCategories = async () => {
-      req.body.addCategories.forEach(async categoryId => {
+      for await (let id of req.body.addCategories) {
         await Category.findByIdAndUpdate(
-          categoryId,
+          id,
           { $addToSet: { items: req.params.id } },
           { new: true, useFindAndModify: false }
         );
-      });
+      }
     }
 
     const removeItemFromCurrentMainCategory = async () => {
@@ -105,8 +108,10 @@ router.put('/update/item/:id', auth, async (req, res) => {
     }
 
     if (req.body.removeCategories) {
-      req.body.removeCategories = req.body.removeCategories.filter((id) => {
-        return id !== req.body.mainCategory ? req.body.mainCategory : item.mainCategory.toString();
+      req.body.removeCategories = req.body.removeCategories.map((id) => {
+        if (id !== req.body.mainCategory && id !== item.mainCategory.toString()) {
+          return id;
+        }
       });
       await removeCategoriesFromItem();
       await removeItemFromCategories();
@@ -118,6 +123,11 @@ router.put('/update/item/:id', auth, async (req, res) => {
     }
 
     if (req.body.mainCategory) {
+      await Item.findByIdAndUpdate(
+        item._id,
+        { $pull: { parentCategories: item.mainCategory } },
+        { new: true, useFindAndModify: false }
+      );
       await removeItemFromCurrentMainCategory();
       await addItemToNewMainCategory();
       const itemUrl = await createUrl(mainCategory);

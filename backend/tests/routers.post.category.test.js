@@ -2,6 +2,9 @@ const request = require('supertest');
 const app = require('../src/app');
 const { User } = require('../src/models/model.user');
 const Category = require('../src/models/model.category');
+const { setupDataBase } = require('./fixtures/db');
+
+beforeAll(setupDataBase);
 
 test('Should admin create parent category', async () => {
   const obj = {
