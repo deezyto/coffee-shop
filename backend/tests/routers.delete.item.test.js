@@ -3,6 +3,9 @@ const app = require('../src/app');
 const { User } = require('../src/models/model.user');
 const Category = require('../src/models/model.category');
 const Item = require('../src/models/model.item');
+const { setupDataBase } = require('./fixtures/db');
+
+beforeAll(setupDataBase);
 
 test('Should admin delete item', async () => {
   const item = await Item.findOne({ slug: 'hp-model-work-1' })
