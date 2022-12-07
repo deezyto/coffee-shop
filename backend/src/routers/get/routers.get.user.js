@@ -5,7 +5,7 @@ const router = new express.Router();
 
 router.get('/users', auth, async (req, res) => {
   try {
-    if (req.admin) {
+    if (!req.admin) {
       return res.status(403).send();
     }
     const sort = {};

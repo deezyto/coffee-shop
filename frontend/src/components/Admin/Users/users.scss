@@ -1,15 +1,7 @@
-.admin-panel {
+.control-panel {
     .container {
         position: relative;
         padding: 100px 0;
-    }
-    .column {
-        display: grid;
-        grid-template-columns: minmax(100px, auto) minmax(100px, auto);
-        align-items: flex-start;
-        column-gap: 50px;
-        row-gap: 50px;
-        margin-top: 50px;
     }
 
     .items, .orders, .users {

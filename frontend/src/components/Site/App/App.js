@@ -3,17 +3,21 @@ import MainPage from '../pages/MainPage';
 import ShopPage from '../pages/ShopPage';
 import CoffeePage from '../pages/CoffeePage';
 import Panel from '../Panel/Panel';
+import ControlPanel from '../../Admin/ControlPanel/ControlPanel';
+import ControlPanelItems from '../../Admin/Items/Items';
+import ControlPanelUsers from '../../Admin/Users/Users';
 import { createRef } from 'react';
 import { createBrowserRouter, useLocation, useOutlet, RouterProvider } from 'react-router-dom';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
-import AdminPanel from '../../Admin/Panel/Panel';
 import './transition.css';
 
 const routes = [
   { path: '/', name: 'MainPage', element: <MainPage />, nodeRef: createRef() },
   { path: '/shop', name: 'ShopPage', element: <ShopPage />, nodeRef: createRef() },
   { path: '/coffee-page', name: 'CoffeePage', element: <CoffeePage />, nodeRef: createRef() },
-  { path: '/admin-panel', name: 'AdminPanel', element: <AdminPanel />, nodeRef: createRef() },
+  { path: '/control-panel', name: 'ControlPanel', element: <ControlPanel />, nodeRef: createRef() },
+  { path: '/control-panel/items', name: 'Items', element: <ControlPanelItems />, nodeRef: createRef() },
+  { path: '/control-panel/users', name: 'Users', element: <ControlPanelUsers />, nodeRef: createRef() },
   { path: '*', name: 'NotFound', element: <h1>Page not found</h1>, nodeRef: createRef() }
 ]
 
@@ -34,26 +38,27 @@ function Router() {
   const location = useLocation();
   const currentOutlet = useOutlet();
   const { nodeRef } =
-  routes.find((route) => route.path === location.pathname) ?? {};
+    routes.find((route) => route.path === location.pathname) ?? {};
   return (
-      <>
-        <SwitchTransition>
-          <CSSTransition
-            key={location.pathname}
-            nodeRef={nodeRef}
-            timeout={300}
-            classNames="page"
-            unmountOnExit
-          >
-            {(state) => (
-              <div ref={nodeRef} className="app">
-                <Panel />
-                {currentOutlet}
-              </div>
-            )}
-          </CSSTransition>
-        </SwitchTransition>
-      </>
+    <>
+      <SwitchTransition>
+        <CSSTransition
+          key={location.pathname}
+          nodeRef={nodeRef}
+          timeout={300}
+          classNames="page"
+          unmountOnExit
+        >
+          {(state) => (
+            <div ref={nodeRef} className="app">
+              <Panel />
+              <ControlPanel location={location} />
+              {currentOutlet}
+            </div>
+          )}
+        </CSSTransition>
+      </SwitchTransition>
+    </>
   )
 }
 

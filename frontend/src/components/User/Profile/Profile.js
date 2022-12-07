@@ -1,33 +1,17 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import * as actions from '../../../redux/actions';
 import UserSetting from '../Setting/Setting';
 import UserOrders from '../Orders/Orders';
 import UserHistory from '../History/History';
 import UserWatch from '../Watch/Watch';
 import Login from '../../Auth/Login/Login';
-import Service from "../../../service/service";
-
+import LogOut from '../../Auth/LogOut/LogOut';
 import './profile.scss';
 
 class UserProfile extends Component {
-
-  onLogout = () => {
-    new Service().userLogout({'Authorization': `Bearer ${this.props.authToken}`})
-      .then(() => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userProfileFields');
-        this.props.isLogin(false);
-        this.props.setAuthToken(false);
-        this.props.setPageName('PAGE HIDE');
-      })
-      .catch(e => {
-        console.log(e);
-      })
-  }
-
   render() {
-    const {currentProfilePage, login, authToken, setPageName, panelOpen} = this.props;
+    const { currentProfilePage, login, authToken, setPageName, panelOpen } = this.props;
     if (!panelOpen) setPageName('PAGE HIDE');
     return (
       <>
@@ -37,22 +21,22 @@ class UserProfile extends Component {
         {currentProfilePage === 'watch' ? <UserWatch /> : null}
         {currentProfilePage === 'login' ? <Login /> : null}
 
-        <div className={panelOpen ? 'user-profile active': 'user-profile'}>
+        <div className={panelOpen ? 'user-profile active' : 'user-profile'}>
           <div className="hello"></div>
           <div className="options">
-          {login && authToken
-            ? 
+            {login && authToken
+              ?
               <>
                 <button onClick={() => setPageName('SETTING')}>Setting</button>
                 <button onClick={() => setPageName('HISTORY')}>Order history</button>
                 <button onClick={() => setPageName('ORDERS')}>Orders</button>
-                <button onClick={this.onLogout}>LogOut</button>
-              </> 
-            : 
+                <LogOut />
+              </>
+              :
               <button onClick={() => setPageName('LOGIN')}>Login</button>
-          }
+            }
             <button onClick={() => setPageName('WATCH')}>Watch List</button>
-            
+
           </div>
         </div>
       </>

@@ -1,15 +1,15 @@
-.admin-panel {
+.control-panel-items {
     .container {
         position: relative;
         padding: 100px 0;
     }
     .column {
-        display: grid;
-        grid-template-columns: minmax(100px, auto) minmax(100px, auto);
+        display: flex;
         align-items: flex-start;
         column-gap: 50px;
         row-gap: 50px;
         margin-top: 50px;
+        margin-left: 210px;
     }
 
     .items, .orders, .users {
@@ -47,6 +47,30 @@
         }
     }
 
+    .items, .orders, .users {
+        border: 1px solid #ccc;
+        width: 100%;
+        padding: 25px;
+        margin-top: 0;
+        display: flex;
+        flex-direction: column;
+        ul {
+            list-style-type: none;
+            li {
+                border: 1px solid #ccc;
+                margin-bottom: 5px;
+                position: relative;
+                padding: 5px;
+                span {
+                    position: absolute;
+                    left: -20px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                }
+            }
+        }
+    }
+
     .create, .edit {
         position: relative;
     }
@@ -63,6 +87,34 @@
         }
     }
 
+    .filters {
+        display: flex;
+        align-items: center;
+        column-gap: 25px;
+        .filter-option {
+            cursor: pointer;
+            padding: 5px;
+            &:hover {
+                text-decoration: underline dotted;
+            }
+        }
+    }
+    
+    .pagenations {
+        ul {
+            display: flex;
+            column-gap: 5px;
+            overflow: hidden;
+            flex-wrap: wrap;
+            max-width: 500px;
+            li {
+                cursor: pointer;
+                &.active-page {
+                    background-color: #ccc;
+                }
+            }
+        }
+    }
     .filters {
         display: flex;
         align-items: center;

@@ -6,7 +6,7 @@ const categoryMiddleware = require('../../middleware/middleware.category');
 
 router.get('/items', auth, async (req, res) => {
   try {
-    if (req.admin) {
+    if (!req.admin) {
       return res.status(403).send();
     }
 

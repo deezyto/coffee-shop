@@ -1,7 +1,7 @@
 const initialState = {
-  currentProfilePage: null, 
+  currentProfilePage: null,
   currentAdminPage: null,
-  panelOpen: false, 
+  panelOpen: false,
   currentUserProfileForm: null,
   userProfileFields: localStorage.getItem('userProfileFields') ? JSON.parse(localStorage.getItem('userProfileFields')) : null,
   loginStatus: 'idle',
