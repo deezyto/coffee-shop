@@ -96,5 +96,5 @@ module.exports = {
   userTwo,
   userTwoId,
   setupDataBase,
-  jwt,
+  jwt
 };

@@ -121,7 +121,7 @@ test('Should admin add categories to item', async () => {
   }
 });
 
-test('Should admin remove categories from item', async () => {
+test('Should admin change item slug', async () => {
   const admin = await User.findOne({ role: 'admin' });
   const categories = [await Category.findOne({ slug: 'for-learning' }), await Category.findOne({ slug: 'for-work' })];
   const item = await Item.findOne({ slug: 'hp-model-work-2' });
@@ -130,9 +130,40 @@ test('Should admin remove categories from item', async () => {
   const response = await request(app)
     .put(`/update/item/${itemId}`)
     .set('Authorization', `Bearer ${admin.tokens[0].token}`)
+    .send({ slug: 'hp-model-work-10' })
+    .expect(200);
+  expect(response.body.url).toEqual('/computers/notebooks/hp-model-work-10');
+  expect(response.body.mainCategory.toString()).toEqual(mainCategoryId);
+  const mainCategoryAfter = await Category.findById(mainCategoryId);
+  const itemAfter = await Item.findById(itemId);
+  for await (let category of categories) {
+    const categoryAfter = await Category.findById(category._id);
+    if (categoryAfter.mainItems.find(id => id.toString() === itemId)) { throw new Error() };
+    if (!categoryAfter.items.find(id => id.toString() === itemId)) { throw new Error() };
+  }
+  if (itemAfter.parentCategories.filter(id => id.toString() === categories[0]._id.toString() || id.toString() === categories[1].id.toString()).length !== 2) {
+    throw new Error();
+  }
+  if (!mainCategoryAfter.mainItems.find(id => id.toString() === itemId)) {
+    throw new Error();
+  }
+  if (!mainCategoryAfter.items.find(id => id.toString() === itemId)) {
+    throw new Error();
+  }
+});
+
+test('Should admin remove categories from item', async () => {
+  const admin = await User.findOne({ role: 'admin' });
+  const categories = [await Category.findOne({ slug: 'for-learning' }), await Category.findOne({ slug: 'for-work' })];
+  const item = await Item.findOne({ slug: 'hp-model-work-10' });
+  let mainCategoryId = item.mainCategory.toString();
+  let itemId = item._id.toString();
+  const response = await request(app)
+    .put(`/update/item/${itemId}`)
+    .set('Authorization', `Bearer ${admin.tokens[0].token}`)
     .send({ removeCategories: [categories[0]._id, categories[1]._id] })
     .expect(200);
-  expect(response.body.url).toEqual('/computers/notebooks/hp-model-work-2');
+  expect(response.body.url).toEqual('/computers/notebooks/hp-model-work-10');
   expect(response.body.mainCategory.toString()).toEqual(mainCategoryId);
   const mainCategoryAfter = await Category.findById(mainCategoryId);
   const itemAfter = await Item.findById(itemId);

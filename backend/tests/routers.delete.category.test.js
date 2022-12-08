@@ -5,7 +5,7 @@ const Category = require('../src/models/model.category');
 const Item = require('../src/models/model.item');
 const { setupDataBase } = require('./fixtures/db');
 
-beforeEach(setupDataBase);
+afterEach(setupDataBase);
 
 test('Should admin delete category', async () => {
   const category = await Category.findOne({ slug: 'notebooks' })
