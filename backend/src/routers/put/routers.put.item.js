@@ -14,7 +14,6 @@ router.put('/update/item/:id', auth, async (req, res) => {
     if (!item) {
       return res.status(404).send({ err: "item not found" });
     }
-    console.log(req.body.removeCategories, item.parentCategories)
 
     const updates = Object.keys(req.body);
     const allowedFields = ['title', 'description', 'slug', 'html', 'metaTags', 'mainCategory', 'removeCategories', 'addCategories'];
@@ -30,6 +29,7 @@ router.put('/update/item/:id', auth, async (req, res) => {
     }
 
     if (req.body.slug) {
+      req.body.slug = req.body.slug.toLowerCase();
       const checkSlug = await Item.findOne({ slug: req.body.slug });
       if (checkSlug && item.slug !== checkSlug.slug) {
         return res.status(400).send({ err: `Slug ${req.body.slug} is available. Please choise another.` })
@@ -130,20 +130,14 @@ router.put('/update/item/:id', auth, async (req, res) => {
       );
       await removeItemFromCurrentMainCategory();
       await addItemToNewMainCategory();
-      const itemUrl = await createUrl(mainCategory);
-      itemUrl.push(req.body.slug ? req.body.slug : item.slug);
-      item.url = itemUrl.join('/');
-    }
-
-    if (req.body.slug) {
-      const changeUrl = item.url.split('/');
-      changeUrl[changeUrl.length - 1] = req.body.slug;
-      item.url = changeUrl.join('/');
+      const urlStructure = await createUrl(mainCategory);
+      item.urlStructureArr = urlStructure[0];
+      item.urlStructureObj = urlStructure[1];
     }
 
     delete req.body.removeCategories;
     delete req.body.addCategories;
-    console.log(req.body)
+
     updates.forEach(field => {
       item[field] = req.body[field];
     })

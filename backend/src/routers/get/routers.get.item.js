@@ -40,18 +40,6 @@ router.get('*', categoryMiddleware, async (req, res) => {
       sort[parts[0]] = parts[1] === 'asc' ? 1 : -1;
     }
 
-    let currentCategory = await Category.findOne({ slug: req.params['0'].split('/')[1] });
-    while (currentCategory.subCategories) {
-      for await (let id of currentCategory.subCategories) {
-        const category = await Category.findById(id);
-        for await (let subCategoryId of category.subCategories) {
-          const category = await Category.findById(subCategoryId);
-          console.log(category.slug, category._id)
-        }
-        console.log(category.slug, category._id)
-        currentCategory = category;
-      }
-    }
     if (req.category) {
       const items = await Item.find({
         '_id': { $in: req.category.items }

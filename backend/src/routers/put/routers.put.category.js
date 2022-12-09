@@ -44,6 +44,7 @@ router.put('/update/category/:id', auth, async (req, res) => {
     }
 
     if (req.body.slug) {
+      req.body.slug = req.body.slug.toLowerCase();
       const checkSlug = await Item.findOne({ slug: req.body.slug });
       if (checkSlug && category.slug !== checkSlug.slug) {
         return res.status(400).send({ err: `Slug ${req.body.slug} is available. Please choise another.` })
@@ -67,13 +68,12 @@ router.put('/update/category/:id', auth, async (req, res) => {
     //із субкатегорії для видалення із поля головна категорія видалити теперішню категорію
     const removeMainCategoryFromSubCategories = async () => {
       for await (let categoryId of req.body.removeSubCategories) {
-        const subCategory = await Category.findById(categoryId);
+        //const subCategory = await Category.findById(categoryId);
         await Category.findByIdAndUpdate(
           categoryId,
           {
             $set: {
               mainCategory: null,
-              url: '/' + subCategory.slug
             }
           },
           { new: true, useFindAndModify: false }
@@ -190,6 +190,16 @@ router.put('/update/category/:id', auth, async (req, res) => {
       );
     }
 
+    //потрібно із категорій отримати список всіх категорій де в обєкті
+    //urlStructureObj є ключ який відповідає slug теперішньої категорії
+    //також із item потрібно отримати список всіх item які мають
+    //обєкті urlStructureObj ключ який відповідає slug теперішньої категорії
+    //при зміні в теперішній категорії mainCategory
+    //потрібно перезаписати масив і обєкт у всіх субкатегоріях теперішньої категорії
+    //і всіх mainItems на новий
+    //якщо міняється slug категорії то знаходимо всі категорії і items в яких в обєкті
+    //є відповідний slug, знаходимо urlStructureArr по індексу з обєкта цей слаг
+    //змінюєм його на новий, далі видаляємо його з обєкта і записуєм в обєкт новий
     const changeUrlInMainItemsCurrentCategory = async () => {
       for await (let itemId of category.mainItems) {
         const itemUrl = await createUrl(category);
