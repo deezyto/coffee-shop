@@ -1,4 +1,5 @@
 const createUrl = async (mainCategory, slug = null) => {
+  console.log(mainCategory, slug)
   let itemUrlArr = mainCategory.urlStructureArr;
   let itemUrlObj = mainCategory.urlStructureObj;
 
@@ -9,5 +10,4 @@ const createUrl = async (mainCategory, slug = null) => {
   }
   return [itemUrlArr, itemUrlObj];
 };
-
 module.exports = { createUrl };

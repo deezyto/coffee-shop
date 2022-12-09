@@ -23,12 +23,16 @@ const itemSchema = new mongoose.Schema({
     maxLength: [100, 'Max length for slug must be a 100 characters'],
     required: true
   },
-  urlStructureArr: {
+  url: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Url'
+  },
+  /* urlStructureArr: {
     type: Array
   },
   urlStructureObj: {
     type: Object
-  },
+  }, */
   mainCategory: {
     type: mongoose.Schema.Types.ObjectId,
     require: true,

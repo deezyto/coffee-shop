@@ -4,6 +4,7 @@ const auth = require('../../middleware/middleware.auth');
 const Item = require('../../models/model.item');
 const Category = require('../../models/model.category');
 const categoryMiddleware = require('../../middleware/middleware.category');
+const Url = require('../../models/model.url');
 
 router.get('/items', auth, async (req, res) => {
   try {
@@ -41,13 +42,15 @@ router.get('*', categoryMiddleware, async (req, res) => {
     }
 
     if (req.category) {
+      const url = await Url.findById(req.category.url);
       const items = await Item.find({
-        '_id': { $in: req.category.items }
+        ['urlStructureObj.' + req.category.slug]: { $exists: true }
       }, null, {
         limit: parseInt(req.query.limit),
         skip: parseInt(req.query.skip),
         sort
       });
+      req.category.url = url;
       return res.send({ items, category: req.category });
     } else if (req.item) {
       return res.status(200).send(req.item);

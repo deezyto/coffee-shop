@@ -68,12 +68,15 @@ router.put('/update/category/:id', auth, async (req, res) => {
     //із субкатегорії для видалення із поля головна категорія видалити теперішню категорію
     const removeMainCategoryFromSubCategories = async () => {
       for await (let categoryId of req.body.removeSubCategories) {
-        //const subCategory = await Category.findById(categoryId);
+        const subCategory = await Category.findById(categoryId);
+        const urlStructure = await createUrl(subCategory);
         await Category.findByIdAndUpdate(
           categoryId,
           {
             $set: {
               mainCategory: null,
+              urlStructureArr: urlStructure[0],
+              urlStructureObj: urlStructure[1]
             }
           },
           { new: true, useFindAndModify: false }
@@ -83,6 +86,23 @@ router.put('/update/category/:id', auth, async (req, res) => {
 
     //4) change url in items if subCategory = mainCategory in item
     const removeSlugMainCategoryFromItems = async () => {
+      //створюєм в items і category посилання на певний документ
+      //який в собі має структуру url
+      //тоді якщо потрібно змінити в категорії slug, ми змінюєм
+      //його тільки в самій категорії і в документі зі структурою url
+      //тоді всі items і category які посилались на цю структуру
+      //будуть мати оновлену структуру url
+      const urlStructure = await createUrl()
+      const items = await Item.updateMany(
+        { ['urlStructureObj' + category.slug]: { exists: true } },
+        {
+          $set: {
+            urlStructureArr: ''
+          }
+        },
+        { new: true, useFindAndModify: false }
+      );
+      console.log(items)
       for await (let categoryId of req.body.removeSubCategories) {
         const subCategory = await Category.findById(categoryId);
         for await (let itemId of subCategory.mainItems) {

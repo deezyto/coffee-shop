@@ -3,6 +3,7 @@ const router = new express.Router();
 const auth = require('../../middleware/middleware.auth');
 const Item = require('../../models/model.item');
 const Category = require('../../models/model.category');
+const Url = require('../../models/model.url');
 const { createUrl } = require('../../utils/url');
 
 const addItemToCategory = function (categoryesIds = [], itemId = '') {
