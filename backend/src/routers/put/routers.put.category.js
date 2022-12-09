@@ -271,11 +271,20 @@ router.put('/update/category/:id', auth, async (req, res) => {
       categoryUrl.push(req.body.slug ? req.body.slug : category.slug);
       category.url = categoryUrl.join('/');
     }
+    if (req.body.mainCategory === null) {
+      //видалити теперішню категорію
+      console.log('main')
+    }
 
     if (req.body.slug) {
       const changeUrl = category.url.split('/');
       changeUrl[changeUrl.length - 1] = req.body.slug;
       category.url = changeUrl.join('/');
+      //потрібно змінити url всі mainItems які належили до теперішньої категорії
+      //потрібно змінити url всім субкатегоріям які належили до теперішньої категорії
+      //або просто знайти в колекції категорій всі url де є попередній слаг
+      //і змінити на новий
+      //так само і в items
     }
 
     delete req.body.removeSubCategories;

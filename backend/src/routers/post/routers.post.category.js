@@ -10,6 +10,10 @@ router.post('/create/category', auth, async (req, res) => {
       return res.status(403).send();
     }
 
+    if (req.body.slug) {
+      req.body.slug = req.body.slug.toLowerCase();
+    }
+
     const checkSlug = await Category.findOne({ slug: req.body.slug });
 
     if (checkSlug) {
@@ -30,10 +34,9 @@ router.post('/create/category', auth, async (req, res) => {
       if (!mainCategory) {
         return res.status(400).send({ err: 'main category not found' });
       }
-      const categoryUrl = await createUrl(mainCategory);
-      categoryUrl.push(req.body.slug);
-      objCategory.url = categoryUrl.join('/');
-
+      const urlStructure = await createUrl(mainCategory, req.body.slug);
+      objCategory.urlStructureArr = urlStructure[0];
+      objCategory.urlStructureObj = urlStructure[1];
       const category = new Category(objCategory);
       await category.save();
 
@@ -45,7 +48,8 @@ router.post('/create/category', auth, async (req, res) => {
 
       return res.status(201).send(category);
     } else {
-      objCategory.url = '/' + req.body.slug;
+      objCategory.urlStructureArr = [req.body.slug];
+      objCategory.urlStructureObj = { [req.body.slug]: [req.body.slug, 0] };
       const category = new Category(objCategory);
       await category.save();
       return res.status(201).send(category);

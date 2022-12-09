@@ -134,9 +134,40 @@ test('Should admin add sub categories to category', async () => {
   }
 });
 
-test('Should admin remove sub categories from category', async () => {
+test('Should admin change category slug', async () => {
   const admin = await User.findOne({ role: 'admin' });
   const category = await Category.findOne({ slug: 'computers' });
+  const subCategories = [await Category.findOne({ slug: 'for-work' }), await Category.findOne({ slug: 'for-learning' })];
+  await request(app)
+    .put(`/update/category/${category._id}`)
+    .set('Authorization', `Bearer ${admin.tokens[0].token}`)
+    .send({ slug: 'computers-new' })
+    .expect(200);
+
+  //перевірити що items які належили до категорії мають змінений slug
+  //перевірити що субкатегорії які належать до категорії мають змінений slug
+  //перевірити що items які належили до субкатегорій мають змінений slug
+  //перевірити що субкатегорії яка належать до субкатегорій мають змінений slug
+  //перевірити що items які належили до субкатегорій субкатегорій мають змінений slug
+  for await (let subCategory of subCategories) {
+    const addedSubCategory = await Category.findById(subCategory._id);
+    expect(addedSubCategory.mainCategory.toString()).toEqual(category._id.toString());
+    expect(addedSubCategory.url).toEqual(`/computers-new/${subCategory.slug}`);
+    const categoryAfter = await Category.findById(category._id);
+    if (!categoryAfter.subCategories.find(item => item.toString() === addedSubCategory._id.toString())) {
+      throw new Error();
+    }
+    const items = await Item.find({ mainCategory: addedSubCategory._id });
+    if (!items.length) throw new Error();
+    for (let item of items) {
+      expect(item.url).toEqual(`/computers-new/${subCategory.slug}/${item.slug}`);
+    }
+  }
+});
+
+test('Should admin remove sub categories from category', async () => {
+  const admin = await User.findOne({ role: 'admin' });
+  const category = await Category.findOne({ slug: 'computers-new' });
   const subCategories = [];
   subCategories.push(await Category.findOne({ slug: 'for-work' }));
   subCategories.push(await Category.findOne({ slug: 'for-learning' }));

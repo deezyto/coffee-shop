@@ -29,6 +29,9 @@ router.post('/create/item', auth, async (req, res) => {
     if (!req.admin) {
       return res.status(403).send();
     }
+    if (req.body.slug) {
+      req.body.slug = req.body.slug.toLowerCase();
+    }
 
     //search item on slug
     const checkSlug = await Item.findOne({ slug: req.body.slug });
@@ -60,8 +63,7 @@ router.post('/create/item', auth, async (req, res) => {
     }
 
     //create new item
-    const itemUrl = await createUrl(mainCategory);
-    itemUrl.push(req.body.slug);
+    const urlStructure = await createUrl(mainCategory);
 
     const objItem = {
       title: req.body.title,
@@ -70,7 +72,8 @@ router.post('/create/item', auth, async (req, res) => {
       html: req.body.html,
       metaTags: req.body.metaTags,
       mainCategory: req.body.mainCategory,
-      url: itemUrl.join('/')
+      urlStructureArr: urlStructure[0],
+      urlStructureObj: urlStructure[1],
     }
 
     const item = new Item(objItem);

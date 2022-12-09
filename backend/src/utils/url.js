@@ -1,16 +1,13 @@
-const Category = require('../models/model.category');
+const createUrl = async (mainCategory, slug = null) => {
+  let itemUrlArr = mainCategory.urlStructureArr;
+  let itemUrlObj = mainCategory.urlStructureObj;
 
-const createUrl = async (mainCategory) => {
-  let itemUrl = [];
-  let currentMainCategory = mainCategory;
-
-  while (currentMainCategory.mainCategory) {
-    itemUrl.unshift(currentMainCategory.slug);
-    currentMainCategory = await Category.findById(currentMainCategory.mainCategory);
+  if (slug) {
+    slug = slug.toLowerCase();
+    itemUrlArr.push(slug);
+    itemUrlObj[slug] = [slug, itemUrlArr.length - 1];
   }
-
-  itemUrl.unshift('/' + currentMainCategory.slug);
-  return itemUrl;
+  return [itemUrlArr, itemUrlObj];
 };
 
 module.exports = { createUrl };
