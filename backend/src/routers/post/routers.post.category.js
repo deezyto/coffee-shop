@@ -11,9 +11,7 @@ router.post('/create/category', auth, async (req, res) => {
       return res.status(403).send();
     }
 
-    if (req.body.slug) {
-      req.body.slug = req.body.slug.toLowerCase();
-    }
+    if (req.body.slug) { req.body.slug = req.body.slug.toLowerCase(); }
 
     const checkSlug = await Category.findOne({ slug: req.body.slug });
 
@@ -26,7 +24,7 @@ router.post('/create/category', auth, async (req, res) => {
     if (!mainCategory && req.body.mainCategory) {
       return res.status(400).send({ err: 'main category not found' });
     }
-    //create new category
+
     const objCategory = {
       title: req.body.title,
       slug: req.body.slug,

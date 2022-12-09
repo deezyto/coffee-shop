@@ -31,8 +31,9 @@ const category = async (req, res, next) => {
       i++;
     }
 
-    req.category = await Category.findOne({ slug: arraysSubCategoriesSlug[countSlugs] });;
-    req.item = await Item.findOne({ slug: arraysSubCategoriesSlug[countSlugs] });;
+    req.category = await Category.findOne({ slug: arraysSubCategoriesSlug[countSlugs - 1] ? arraysSubCategoriesSlug[countSlugs - 1] : arraysSubCategoriesSlug[countSlugs] });
+    req.item = await Item.findOne({ slug: arraysSubCategoriesSlug[countSlugs] });
+    if (!req.category || !req.item) { return res.status(400).send() };
     next();
   } catch (e) {
     return res.status(404).send();

@@ -62,9 +62,7 @@ router.post('/create/item', auth, async (req, res) => {
     if (!req.body.parentCategories) {
       req.body.parentCategories = [mainCategory._id];
     }
-
-    //create new item
-    const urlStructure = await createUrl(mainCategory);
+    const url = await Url.findById(mainCategory.url);
 
     const objItem = {
       title: req.body.title,
@@ -73,9 +71,8 @@ router.post('/create/item', auth, async (req, res) => {
       html: req.body.html,
       metaTags: req.body.metaTags,
       mainCategory: req.body.mainCategory,
-      urlStructureArr: urlStructure[0],
-      urlStructureObj: urlStructure[1],
     }
+    objItem.url = url;
 
     const item = new Item(objItem);
 
