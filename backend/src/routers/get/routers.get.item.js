@@ -1,10 +1,10 @@
 const express = require('express');
 const router = new express.Router();
 const auth = require('../../middleware/middleware.auth');
-const Item = require('../../models/model.item');
 const Category = require('../../models/model.category');
-const categoryMiddleware = require('../../middleware/middleware.category');
+const Item = require('../../models/model.item');
 const Url = require('../../models/model.url');
+const checkUrl = require('../../middleware/middleware.url');
 
 router.get('/items', auth, async (req, res) => {
   try {
@@ -33,7 +33,7 @@ router.get('/items', auth, async (req, res) => {
 
 //get items from category
 //get subcategory from category
-router.get('*', categoryMiddleware, async (req, res) => {
+router.get('*', checkUrl, async (req, res) => {
   try {
     const sort = {};
     if (req.query.sortBy) {
@@ -42,6 +42,7 @@ router.get('*', categoryMiddleware, async (req, res) => {
     }
 
     const url = await Url.findById(req.category.url);
+
     const items = await Item.find({
       url
     }, null, {
@@ -49,9 +50,15 @@ router.get('*', categoryMiddleware, async (req, res) => {
       skip: parseInt(req.query.skip),
       sort
     });
-    req.category.url = url;
-    req.item.url = url;
-    return res.send({ items, category: req.category });
+    if (req.category) {
+      req.category.url = url;
+    }
+    if (req.item) {
+      req.item.url = url;
+      return res.send({ item: req.item, category: req.category });
+    }
+
+    return res.send({ items: items, category: req.category });
 
   } catch {
     return res.status(500).send()

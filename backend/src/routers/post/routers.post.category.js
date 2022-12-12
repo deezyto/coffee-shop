@@ -1,50 +1,60 @@
 const express = require('express');
 const router = new express.Router();
+const mongoose = require('mongoose');
 const auth = require('../../middleware/middleware.auth');
 const Category = require('../../models/model.category');
 const Url = require('../../models/model.url');
 const { createUrl } = require('../../utils/url');
 
-router.post('/create/category', auth, async (req, res) => {
+router.post('/*/category', auth, async (req, res) => {
   try {
+    console.log(req.params[0])
     if (!req.admin) {
       return res.status(403).send();
     }
 
-    if (req.body.slug) { req.body.slug = req.body.slug.toLowerCase(); }
+    const parentCategory = req.params[0].split('/').filter(item => item.length);
 
-    const checkSlug = await Category.findOne({ slug: req.body.slug });
+    const mainCategory = await Category.findOne({ slug: parentCategory[parentCategory.length - 1] });
 
-    if (checkSlug) {
-      return res.status(400).send({ err: `Slug ${req.body.slug} is available. Please choose another unique slug` });
+    req.body.slug = req.body.slug.toLowerCase();
+
+    const checkSlug = await Category.find({ slug: req.body.slug });
+    for await (let category of checkSlug) {
+      if (category && !category.mainCategory || category && category.mainCategory.toString() === mainCategory._id.toString()) {
+        return res.status(400).send({ err: `Slug ${req.body.slug} is available. Please choose another unique slug` });
+      }
     }
+    //якщо є категорія з таким самим самим слагом але його
+    //parent категорія не така як прийшла з url, то тоді дозволяєм створити таку категорію
 
-    const mainCategory = await Category.findById(req.body.mainCategory);
-
-    if (!mainCategory && req.body.mainCategory) {
+    if (!mainCategory && parentCategory.length) {
       return res.status(400).send({ err: 'main category not found' });
     }
+    const categoryId = new mongoose.Types.ObjectId();
 
     const objCategory = {
+      _id: categoryId,
       title: req.body.title,
       slug: req.body.slug,
       description: req.body.description,
       html: req.body.html,
-      metaTags: req.body.metaTags,
-      mainCategory: req.body.mainCategory
+      metaTags: req.body.metaTags
     }
 
-    const objUrl = {};
+    const objUrl = {
+      parent: categoryId
+    };
 
     if (mainCategory) {
+      objCategory.mainCategory = mainCategory._id;
       const firstUrl = await Url.findById(mainCategory.url);
-      const firstAndLastSlug = firstUrl.urlStructureArr[1] ? firstUrl.urlStructureArr[0] + '/' + mainCategory.slug : mainCategory.slug;
-      const url = await Url.findOne({ firstAndLastSlug });
-      const urlStructure = await createUrl(url, req.body.slug);
+      const firstAndLastSlug = firstUrl.urlStructureArr[1] ? firstUrl.urlStructureArr[0] + '/' + req.body.slug : req.body.slug;
+      const urlStructure = await createUrl(firstUrl, req.body.slug);
 
       objUrl.urlStructureArr = urlStructure[0];
       objUrl.urlStructureObj = urlStructure[1];
-      objUrl.firstAndLastSlug = mainCategory.slug + '/' + req.body.slug;
+      objUrl.firstAndLastSlug = firstAndLastSlug;
       objUrl.url = urlStructure[0].join('/');
 
     } else {
@@ -53,9 +63,9 @@ router.post('/create/category', auth, async (req, res) => {
       objUrl.firstAndLastSlug = req.body.slug;
       objUrl.url = req.body.slug;
     }
-    const category = new Category(objCategory);
     const url = new Url(objUrl);
     await url.save();
+    const category = new Category(objCategory);
     category.url = url;
     await category.save();
     if (mainCategory) {

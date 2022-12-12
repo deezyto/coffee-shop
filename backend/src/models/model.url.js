@@ -4,9 +4,13 @@ const urlSchema = new mongoose.Schema({
   url: {
     type: String,
     required: true,
+    unique: true,
     trim: true,
     minLength: [1, 'Min length for url must be a 1 character'],
     maxLength: [100, 'Max length for url must be a 100 characters'],
+  },
+  parent: {
+    type: mongoose.Schema.Types.ObjectId
   },
   firstAndLastSlug: {
     type: String

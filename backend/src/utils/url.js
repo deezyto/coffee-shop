@@ -1,5 +1,4 @@
 const createUrl = async (mainCategory, slug = null) => {
-  console.log(mainCategory, slug)
   let itemUrlArr = mainCategory.urlStructureArr;
   let itemUrlObj = mainCategory.urlStructureObj;
 

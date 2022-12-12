@@ -18,7 +18,6 @@ const categorySchema = new mongoose.Schema({
     type: String,
     trim: true,
     require: true,
-    unique: true,
     lowercase: true,
     minLength: [1, 'Min length for slug must be a 1 characters'],
     maxLength: [100, 'Max length for slug must be a 100 characters']
@@ -39,12 +38,6 @@ const categorySchema = new mongoose.Schema({
     type: String,
     maxLength: [10000, 'Max length for html must be a 10000 characters']
   },
-  /* urlStructureArr: {
-    type: Array
-  },
-  urlStructureObj: {
-    type: Object
-  }, */
   url: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Url'

@@ -25,7 +25,7 @@ const addCategoryToItem = async function (categoryesIds = [], itemId = '') {
 };
 
 //create item in category or subcategory
-router.post('/create/item', auth, async (req, res) => {
+router.post('/*/item', auth, async (req, res) => {
   try {
     if (!req.admin) {
       return res.status(403).send();
@@ -34,14 +34,20 @@ router.post('/create/item', auth, async (req, res) => {
       req.body.slug = req.body.slug.toLowerCase();
     }
 
-    //search item on slug
-    const checkSlug = await Item.findOne({ slug: req.body.slug });
+    const checkSlugItem = await Item.findOne({ slug: req.body.slug });
+    const checkSlugCategory = await Category.findOne({ slug: req.body.slug });
 
-    if (checkSlug) {
+    if (checkSlugItem || checkSlugCategory) {
       return res.status(400).send({ err: `Slug ${req.body.slug} is available. Please choose another unique slug` });
     }
 
-    const mainCategory = await Category.findById(req.body.mainCategory);
+    const parentCategory = req.params[0].split('/').filter(item => item.length);
+
+    const url = await Url.findOne({ url: parentCategory.join('/') });
+    if (!url) {
+      return res.status(400).send({ err: 'main category not found' });
+    }
+    const mainCategory = await Category.findById(url.parent);
     if (!mainCategory) {
       return res.status(400).send({ err: 'main category not found' });
     }
@@ -62,7 +68,6 @@ router.post('/create/item', auth, async (req, res) => {
     if (!req.body.parentCategories) {
       req.body.parentCategories = [mainCategory._id];
     }
-    const url = await Url.findById(mainCategory.url);
 
     const objItem = {
       title: req.body.title,
@@ -70,7 +75,7 @@ router.post('/create/item', auth, async (req, res) => {
       description: req.body.description,
       html: req.body.html,
       metaTags: req.body.metaTags,
-      mainCategory: req.body.mainCategory,
+      mainCategory: mainCategory._id,
     }
     objItem.url = url;
 
